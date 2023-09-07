@@ -43,3 +43,17 @@ enum Imm {
     IMM_UPPER = 5, 
     SIGN_EXTENDED_SHIFT = 20 
 };
+
+int isHex(const char* str) {
+    size_t length = strlen(str);
+    if (length <= 10 && strncmp(str, "0x", 2) == 0) {
+        for (size_t i = 2; i < length; i++) {
+            if (!isxdigit((unsigned char)str[i])) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+

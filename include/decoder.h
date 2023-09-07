@@ -3,6 +3,6 @@
 
 #include "../include/common.h"
 
-void test1(instruction* i, int x);
+int isHex(const char* str);
 
 #endif
