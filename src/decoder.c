@@ -44,16 +44,26 @@ enum Imm {
     SIGN_EXTENDED_SHIFT = 20 
 };
 
-int isHex(const char* str) {
+bool isHex(const char* str) {
     size_t length = strlen(str);
     if (length <= 10 && strncmp(str, "0x", 2) == 0) {
         for (size_t i = 2; i < length; i++) {
             if (!isxdigit((unsigned char)str[i])) {
-                return 0;
+                return false;
             }
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
+bool convertStrToUint(const char* str, unsigned int *n) {
+    if(!isHex(str))
+    {
+        fprintf(stderr, "Invalid input. Please input a valid hex string\n");
+        return false;
+    }
+    *n = (unsigned int)strtol(str, NULL, 16);
+    printf("%x\n", *n);
+    return true;
+}

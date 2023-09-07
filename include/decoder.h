@@ -3,6 +3,8 @@
 
 #include "../include/common.h"
 
-int isHex(const char* str);
+bool isHex(const char* str);
+
+bool convertStrToUint(const char* str, unsigned int *n);
 
 #endif
