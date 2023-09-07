@@ -2,10 +2,7 @@
 #include "../include/encoder.h"
 
 int main() {
-    instruction* risc = malloc(sizeof *risc);
-    int x = 4;
-    int y = 3;
-    test1(risc, x);
-    test2(risc, y);
+    instruction* risc = malloc(sizeof(instruction));
+    free(risc);
     return 0;
 }
