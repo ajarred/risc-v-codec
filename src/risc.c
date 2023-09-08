@@ -11,6 +11,7 @@ int main() {
             instruction* risc = malloc(sizeof(instruction));
             risc->input = n;
             parseOpcode(risc); 
+            parseFunct3(risc);
             free(risc); 
         }
     }
