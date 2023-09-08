@@ -69,4 +69,6 @@ void parseRs1(instruction* i);
 
 void parseRs2(instruction* i);
 
+void printInstructions(instruction* i);
+
 #endif

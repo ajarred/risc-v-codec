@@ -16,6 +16,7 @@ int main() {
             parseRd(risc);
             parseRs1(risc);
             parseRs2(risc);
+            printInstructions(risc);
             free(risc); 
         }
     }
