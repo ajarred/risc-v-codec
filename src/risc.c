@@ -15,6 +15,7 @@ int main() {
             parseFunct7(risc);
             parseRd(risc);
             parseRs1(risc);
+            parseRs2(risc);
             free(risc); 
         }
     }

@@ -67,4 +67,6 @@ void parseRd(instruction* i);
 
 void parseRs1(instruction* i);
 
+void parseRs2(instruction* i);
+
 #endif

@@ -248,19 +248,52 @@ void parseRs1(instruction* i) {
     unsigned int mask = MASK_5BITS << BIT_RS1;
     i->rs1 = (mask & i->input) >> BIT_RS1;
     switch (i->opcode) {
-        case ADD:
-        case ADDI:
-        case LD:
-            printf("rs1 = %d\n", i->rs1);
-            break;
-        case SD:
-            if(i->rs1 == 0x0) {
-                printError(i, ERR_X0_RS1);
+    case ADD:
+    case ADDI:
+    case LD:
+        // printf("rs1 = %d\n", i->rs1);
+        break;
+    case SD:
+        if(i->rs1 == 0x0) {
+            printError(i, ERR_X0_RS1);
+            return;
+        } 
+        // printf("rs1 = %d\n", i->rs1);
+        break;
+    default:
+        break;
+    }
+}
+
+// parse bits 20-24
+void parseRs2(instruction* i)
+{
+    if (i->type == INVALID) {
+        return;
+    }
+    unsigned int mask = MASK_5BITS << BIT_RS2;
+    unsigned int rs2 = (mask & i->input) >> BIT_RS2;
+    int signedCheck;
+    switch (i->opcode) {
+    case ADD:
+    case SD:
+        i->rs2 = rs2;
+        printf("rs2 = %d\n", i->rs2);
+        break;
+    case ADDI:
+    case LD:
+        printf("immediate (lower) = %d\n", rs2);
+        printf("immediate (upper) = %d\n", i->immediate);
+        signedCheck = ((i->immediate) | rs2) << SIGN_EXTENDED_SHIFT;
+        signedCheck >>= SIGN_EXTENDED_SHIFT; 
+        i->immediate = signedCheck;
+        if (signedCheck < MIN_SIGNED_BIT || signedCheck > MAX_SIGNED_BIT) {
+                printError(i, ERR_IMM);
                 return;
-            } 
-            printf("rs1 = %d\n", i->rs1);
-            break;
-        default:
-            break;
+        }
+        printf("immediate (total) = %d\n", i->immediate);
+        break;
+    default:
+        break;
     }
 }
