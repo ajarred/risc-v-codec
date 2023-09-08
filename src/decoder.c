@@ -64,8 +64,74 @@ bool convertStrToUint(const char* str, unsigned int *n) {
         return false;
     }
     *n = (unsigned int)strtol(str, NULL, 16);
-    printf("%x\n", *n);
+    // printf("%x\n", *n);
     return true;
+}
+
+void printError(instruction* i, const enum ErrorType err) {
+    switch (err) {
+    case ERR_OPCODE:
+        i->type = INVALID;
+        fprintf(stderr, "Opcode not found\n");
+        printf("Opcode = %x\n", i->opcode);
+        break;
+    case ERR_FUNCT3:
+        i->type = INVALID;
+        switch(i->opcode) {
+        case ADD:
+        case ADDI:
+            fprintf(stderr, "Invalid funct3. Funct3 must be 0x0\n");
+            printf("Opcode = %x, ", i->opcode);
+            printf("Funct3 = %x\n", i->funct3);
+            break;
+        case LD:
+        case SD:
+            fprintf(stderr, "Invalid funct3. Funct3 must be 0x3\n");
+            printf("Opcode = %x, ", i->opcode);
+            printf("Funct3 = %x\n", i->funct3);
+            break;
+        default:
+            break;
+        }
+        break;
+    case ERR_FUNCT7:
+        switch(i->opcode) {
+        case ADD:
+            i->type = INVALID;
+            fprintf(stderr, "Invalid funct7. Funct7 must be either 0x0 or 0x20\n");
+            printf("Opcode = %x, ", i->opcode);
+            printf("Funct3 = %x, ", i->funct3);
+            printf("Funct7 = %x\n", i->funct7);
+            break;
+        default:
+            break;
+        }
+        break;
+    case ERR_X0_RD:
+        i->type = INVALID;
+        fprintf(stderr, "Invalid rd: Register x0 cannot be modified\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);            
+        printf("Funct7 = %x, ", i->funct7);
+        break;
+    case ERR_X0_RS1:
+        i->type = INVALID;
+        fprintf(stderr, "Invalid rs1: Register x0 cannot be modified\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);            
+        printf("Funct7 = %x, ", i->funct7);
+        break;
+    case ERR_IMM:
+        i->type = INVALID;
+        fprintf(stderr, "Immediate value is out of range\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);            
+        printf("Funct7 = %x, ", i->funct7);
+        printf("Immediate = %x\n", i->immediate);
+        break;
+    default:
+        break;
+    }
 }
 
 // parse bits 0-6
@@ -75,7 +141,7 @@ void parseOpcode(instruction* i) {
     }
     unsigned int mask = MASK_7BITS; 
     i->opcode = (enum Opcode)(i->input & mask); // convert uint to enum type
-    printf("%x\n", i->opcode);
+    // printf("%x\n", i->opcode);
 
     switch (i->opcode) {
         case ADD:
@@ -90,8 +156,7 @@ void parseOpcode(instruction* i) {
             break;
         default:
             i->type = INVALID;
-            printf("error\n");
-            // printError(i, ERR_OPCODE);
+            printError(i, ERR_OPCODE);
             break;
     }
 }
