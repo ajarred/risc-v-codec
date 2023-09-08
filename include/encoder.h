@@ -31,28 +31,38 @@ bool isValidInstruction(const char* s);
 
 void obtainInstruction(instruction* i, const char* s);
 
-// instr
-// obtain opcode
-// bits 0-6 -> input
+void obtainRd(instruction*i, const char* s);
+// obtain rd
+// bits 7-11 ->
+// if sd, skip
 
-// obtain funct3
-// instr
-// bits 12-14 -> input
+void obtainRs1(instruction*i, const char* s);
+// obtain rs1
+// bits 15-19 ->
 
+void obtainRs2(instruction*i, const char* s);
+// obtain rs2
+// bits 20-24 ->
+
+void obtainFunct7(instruction*i, const char* s);
 // obtain funct7
 // input
 // funct7 || imm (up)
 // bits 25-31 ->
 
-// obtain rd
-// bits 7-11 ->
+void obtainImmediate(instruction*i, const char* s);
 
-// obtain rs1
-// bits 15-19 ->
+// instr
+// obtain opcode
+// bits 0-6 -> input
+void obtainOpcode(instruction* i);
 
-// obtain rs2
-// bits 20-24 ->
+// obtain funct3
+// instr
+// bits 12-14 -> input
+void obtainFunct3(instruction* i);
 
 // obtain input
+void obtainInput(instruction* i);
 
 #endif
