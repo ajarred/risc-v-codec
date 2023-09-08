@@ -1,6 +1,12 @@
 #include "../include/encoder.h"
 
-// void test2(instruction* i, int x) {
-//     i->y = x;
-//     printf("%d\n", x);
-// }
+bool isValidInstruction(const char* s) {
+    if (strncmp(s, "add", 3) == 0 ||
+        strncmp(s, "sub", 3) == 0 ||
+        strncmp(s, "addi",4) == 0 ||
+        strncmp(s, "ld",  4) == 0 || 
+        strncmp(s, "sd",  4) == 0) {
+        return true;
+    }
+    return false;
+}

@@ -2,7 +2,7 @@
 #include "../include/encoder.h"
 
 int main() {
-    printf("RISC-V Instruction Decoder\n"
+    printf("RISC-V Instruction Coder\n"
     "Please input a hex string starting with 0x\n"
     "Max 8-characters excl. 0x (e.g., 0x1989)\n"
     "Press Ctrl-C to terminate\n");
@@ -11,11 +11,17 @@ int main() {
         unsigned int n;
         printf("risc>");
         scanf("%s", input);
-        if (convertStrToUint(input, &n)) {
+        if (strncmp(input, "0x", 2) == 0) {
+            if (convertStrToUint(input, &n)) {
             instruction* risc = malloc(sizeof(instruction));
             risc->input = n;
             decodeInstruction(risc);
             free(risc); 
+            }
+        } else if (isValidInstruction(input)) {
+            printf("valid\n");
+        } else {
+            fprintf(stderr, "Invalid input.\n");
         }
     }
     return 0;
