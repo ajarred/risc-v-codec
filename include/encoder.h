@@ -29,6 +29,8 @@
 // instr, type, 
 bool isValidInstruction(const char* s);
 
+void obtainInstruction(instruction* i, const char* s);
+
 // instr
 // obtain opcode
 // bits 0-6 -> input

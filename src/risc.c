@@ -19,7 +19,10 @@ int main() {
             free(risc); 
             }
         } else if (isValidInstruction(input)) {
-            printf("valid\n");
+            instruction* risc = malloc(sizeof(instruction));
+            obtainInstruction(risc, input);
+            printf("instr = %s\n", risc->instr);
+            printf("type = %d\n", risc->type);
         } else {
             fprintf(stderr, "Invalid input.\n");
         }
