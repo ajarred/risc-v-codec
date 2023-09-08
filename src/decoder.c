@@ -68,14 +68,14 @@ void printError(instruction* i, const enum ErrorType err) {
         fprintf(stderr, "Invalid rd: Register x0 cannot be modified\n");
         printf("Opcode = %x, ", i->opcode);
         printf("Funct3 = %x, ", i->funct3);            
-        printf("Funct7 = %x, ", i->funct7);
+        printf("Funct7 = %x\n", i->funct7);
         break;
     case ERR_X0_RS1:
         i->type = INVALID;
         fprintf(stderr, "Invalid rs1: Register x0 cannot be modified\n");
         printf("Opcode = %x, ", i->opcode);
         printf("Funct3 = %x, ", i->funct3);            
-        printf("Funct7 = %x, ", i->funct7);
+        printf("Funct7 = %x\n", i->funct7);
         break;
     case ERR_IMM:
         i->type = INVALID;
@@ -213,27 +213,52 @@ void parseRd(instruction* i) {
     unsigned int rd = (mask & i->input) >> BIT_RD;
     int signedCheck;
     switch (i->opcode) {
+    case ADD:
+    case ADDI:     
+    case LD:
+        i->rd = rd;
+        if(rd == 0x0) {
+            printError(i, ERR_X0_RD);
+            return;
+        } 
+        // printf("rd = %x\n", rd);
+        break;
+    case SD:
+        // printf("immediate (lower) = %d\n", rd);
+        // printf("immediate (upper) = %d\n", i->immediate);
+        signedCheck = ((i->immediate) | rd) << SIGN_EXTENDED_SHIFT;
+        signedCheck >>= SIGN_EXTENDED_SHIFT;  
+        i->immediate = signedCheck;
+        if (i->immediate < MIN_SIGNED_BIT || i->immediate > MAX_SIGNED_BIT) {
+            printError(i, ERR_IMM);
+            return;
+        }
+        // printf("immediate (total) = %d\n", i->immediate);
+        break;
+    default:
+        break;
+    }
+}
+
+// parse bits 15-19
+void parseRs1(instruction* i) {
+    if (i->type == INVALID) {
+        return;
+    }
+    unsigned int mask = MASK_5BITS << BIT_RS1;
+    i->rs1 = (mask & i->input) >> BIT_RS1;
+    switch (i->opcode) {
         case ADD:
         case ADDI:
         case LD:
-            i->rd = rd;
-            if(rd == 0x0) {
-                printError(i, ERR_X0_RD);
-                return;
-            } 
-            printf("rd = %x\n", rd);
+            printf("rs1 = %d\n", i->rs1);
             break;
         case SD:
-            printf("immediate (lower) = %d\n", rd);
-            printf("immediate (upper) = %d\n", i->immediate);
-            signedCheck = ((i->immediate) | rd) << SIGN_EXTENDED_SHIFT;
-            signedCheck >>= SIGN_EXTENDED_SHIFT;  
-            i->immediate = signedCheck;
-            if (i->immediate < MIN_SIGNED_BIT || i->immediate > MAX_SIGNED_BIT) {
-                printError(i, ERR_IMM);
+            if(i->rs1 == 0x0) {
+                printError(i, ERR_X0_RS1);
                 return;
-            }
-            printf("immediate (total) = %d\n", i->immediate);
+            } 
+            printf("rs1 = %d\n", i->rs1);
             break;
         default:
             break;

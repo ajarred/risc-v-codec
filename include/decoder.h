@@ -65,4 +65,6 @@ void parseFunct7(instruction* i);
 
 void parseRd(instruction* i);
 
+void parseRs1(instruction* i);
+
 #endif
