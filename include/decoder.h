@@ -71,4 +71,6 @@ void parseRs2(instruction* i);
 
 void printInstructions(instruction* i);
 
+void decodeInstruction(instruction* i);
+
 #endif

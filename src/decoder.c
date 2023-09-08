@@ -345,3 +345,13 @@ void printInstructions(instruction* i) {
         break;
     }
 }
+
+void decodeInstruction(instruction* i) {
+    parseOpcode(i); 
+    parseFunct3(i);
+    parseFunct7(i);
+    parseRd(i);
+    parseRs1(i);
+    parseRs2(i);
+    printInstructions(i);
+}
