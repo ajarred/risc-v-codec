@@ -2,7 +2,7 @@
 #include "../include/encoder.h"
 
 int main() {
-    printf("RISC-V Instruction Coder\n"
+    printf("RISC-V Instruction Codec\n"
     "Please input a hex string starting with 0x\n"
     "Max 8-characters excl. 0x (e.g., 0x1989)\n"
     "Press Ctrl-C to terminate\n");
