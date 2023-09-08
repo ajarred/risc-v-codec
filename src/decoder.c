@@ -179,15 +179,15 @@ void parseFunct7(instruction* i) {
             printError(i, ERR_FUNCT7);
             return;
         }
-        printf("funct7 = %x\n", i->funct7);
+        // printf("funct7 = %x\n", i->funct7);
         switch (i->funct7) {
         case 0x0:
             strcpy(i->instr, "add");
-            printf("instr = %s\n", i->instr);
+            // printf("instr = %s\n", i->instr);
             break;
         case 0x20:
             strcpy(i->instr, "sub");
-            printf("instr = %s\n", i->instr);
+            // printf("instr = %s\n", i->instr);
             break;
         default:
             break;
@@ -197,9 +197,45 @@ void parseFunct7(instruction* i) {
     case LD:
     case SD:
         i->immediate = (funct7 << IMM_UPPER);
-        printf("immediate (upper) = %d\n", i->immediate);
+        // printf("immediate (upper) = %d\n", i->immediate);
         break;
     default:
         break;
+    }
+}
+
+// parse bits 7-11
+void parseRd(instruction* i) {
+    if (i->type == INVALID) {
+        return;
+    }
+    unsigned int mask = MASK_5BITS << BIT_RD;
+    unsigned int rd = (mask & i->input) >> BIT_RD;
+    int signedCheck;
+    switch (i->opcode) {
+        case ADD:
+        case ADDI:
+        case LD:
+            i->rd = rd;
+            if(rd == 0x0) {
+                printError(i, ERR_X0_RD);
+                return;
+            } 
+            printf("rd = %x\n", rd);
+            break;
+        case SD:
+            printf("immediate (lower) = %d\n", rd);
+            printf("immediate (upper) = %d\n", i->immediate);
+            signedCheck = ((i->immediate) | rd) << SIGN_EXTENDED_SHIFT;
+            signedCheck >>= SIGN_EXTENDED_SHIFT;  
+            i->immediate = signedCheck;
+            if (i->immediate < MIN_SIGNED_BIT || i->immediate > MAX_SIGNED_BIT) {
+                printError(i, ERR_IMM);
+                return;
+            }
+            printf("immediate (total) = %d\n", i->immediate);
+            break;
+        default:
+            break;
     }
 }

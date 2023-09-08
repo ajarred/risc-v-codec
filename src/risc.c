@@ -13,6 +13,7 @@ int main() {
             parseOpcode(risc); 
             parseFunct3(risc);
             parseFunct7(risc);
+            parseRd(risc);
             free(risc); 
         }
     }

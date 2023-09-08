@@ -3,6 +3,10 @@
 
 #include "../include/common.h"
 
+// 12-bit immediate value limits
+#define MIN_SIGNED_BIT -2048
+#define MAX_SIGNED_BIT 2047
+
 enum Format { 
     INVALID,
     R, 
@@ -58,5 +62,7 @@ void parseOpcode(instruction* i);
 void parseFunct3(instruction* i);
 
 void parseFunct7(instruction* i);
+
+void parseRd(instruction* i);
 
 #endif
