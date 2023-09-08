@@ -17,10 +17,10 @@ enum ErrorType {
 };
 
 enum Opcode {
-    ADD = 0x33, 
-    ADDI = 0x13,
-    LD = 0x3,
-    SD = 0x23
+    ADD = 0x33u, 
+    ADDI = 0x13u,
+    LD = 0x3u,
+    SD = 0x23u
 };
 
 enum BitPlace {
@@ -66,4 +66,32 @@ bool convertStrToUint(const char* str, unsigned int *n) {
     *n = (unsigned int)strtol(str, NULL, 16);
     printf("%x\n", *n);
     return true;
+}
+
+// parse bits 0-6
+void parseOpcode(instruction* i) {
+    if (i == NULL) {
+        return;
+    }
+    unsigned int mask = MASK_7BITS; 
+    i->opcode = (enum Opcode)(i->input & mask); // convert uint to enum type
+    printf("%x\n", i->opcode);
+
+    switch (i->opcode) {
+        case ADD:
+            i->type = R;
+            break;
+        case LD:
+        case ADDI:
+            i->type = I;
+            break;
+        case SD:
+            i->type = S;
+            break;
+        default:
+            i->type = INVALID;
+            printf("error\n");
+            // printError(i, ERR_OPCODE);
+            break;
+    }
 }

@@ -2,9 +2,17 @@
 #include "../include/encoder.h"
 
 int main() {
-    // instruction* risc = malloc(sizeof(instruction));
-    // free(risc);
-    unsigned int n;
-    convertStrToUint("0x123", &n);
+    while (1) {
+        char input[255];
+        unsigned int n;
+        printf("risc>");
+        scanf("%s", input);
+        if (convertStrToUint(input, &n)) {
+            instruction* risc = malloc(sizeof(instruction));
+            risc->input = n;
+            parseOpcode(risc); 
+            free(risc); 
+        }
+    }
     return 0;
 }
