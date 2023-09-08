@@ -12,6 +12,7 @@ int main() {
             risc->input = n;
             parseOpcode(risc); 
             parseFunct3(risc);
+            parseFunct7(risc);
             free(risc); 
         }
     }

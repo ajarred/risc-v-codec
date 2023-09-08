@@ -57,4 +57,6 @@ void parseOpcode(instruction* i);
 
 void parseFunct3(instruction* i);
 
+void parseFunct7(instruction* i);
+
 #endif

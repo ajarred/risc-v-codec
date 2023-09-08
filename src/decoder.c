@@ -100,20 +100,20 @@ void parseOpcode(instruction* i) {
     // printf("%x\n", i->opcode);
 
     switch (i->opcode) {
-        case ADD:
-            i->type = R;
-            break;
-        case LD:
-        case ADDI:
-            i->type = I;
-            break;
-        case SD:
-            i->type = S;
-            break;
-        default:
-            i->type = INVALID;
-            printError(i, ERR_OPCODE);
-            break;
+    case ADD:
+        i->type = R;
+        break;
+    case LD:
+    case ADDI:
+        i->type = I;
+        break;
+    case SD:
+        i->type = S;
+        break;
+    default:
+        i->type = INVALID;
+        printError(i, ERR_OPCODE);
+        break;
     }
 }
 
@@ -125,41 +125,81 @@ void parseFunct3(instruction* i) {
     unsigned int mask = MASK_3BITS << BIT_FUNCT3; 
     i->funct3 = (mask & i->input) >> BIT_FUNCT3;
     switch(i->opcode) {
-        case ADD:
-            if (i->funct3 != 0x0) {
-                printError(i, ERR_FUNCT3);
-                return;
-            }
-            printf("funct3 = %x\n", i->funct3);
-            break;
-        case ADDI:
-            if (i->funct3 != 0x0) {
-                printError(i, ERR_FUNCT3);
-                return;
-            }
-            printf("funct3 = %x\n", i->funct3);
-            strcpy(i->instr, "addi");
+    case ADD:
+        if (i->funct3 != 0x0) {
+            printError(i, ERR_FUNCT3);
+            return;
+        }
+        // printf("funct3 = %x\n", i->funct3);
+        break;
+    case ADDI:
+        if (i->funct3 != 0x0) {
+            printError(i, ERR_FUNCT3);
+            return;
+        }
+        // printf("funct3 = %x\n", i->funct3);
+        strcpy(i->instr, "addi");
+        // printf("instr = %s\n", i->instr);
+        break;
+    case LD:
+        if (i->funct3 != 0x3) {
+            printError(i, ERR_FUNCT3);
+            return;
+        }
+        // printf("funct3 = %x\n", i->funct3);
+        strcpy(i->instr, "ld");
+        // printf("instr = %s\n", i->instr);
+        break;
+    case SD:
+        if (i->funct3 != 0x3) {
+            printError(i, ERR_FUNCT3);
+            return;
+        }
+        // printf("funct3 = %x\n", i->funct3);
+        strcpy(i->instr, "sd");
+        // printf("instr = %s\n", i->instr);
+        break;
+    default:
+        break;
+    }
+}
+
+// parse bits 25-32
+void parseFunct7(instruction* i) {
+    if (i->type == INVALID) {
+        return;
+    }
+    unsigned int mask = MASK_7BITS << BIT_FUNCT7; 
+    unsigned int funct7 = (mask & i->input) >> BIT_FUNCT7;
+    switch (i->opcode) {
+    case ADD:
+        i->funct7 = funct7;
+        if (i->funct7 != 0x0 && funct7 != 0x20)
+        {
+            printError(i, ERR_FUNCT7);
+            return;
+        }
+        printf("funct7 = %x\n", i->funct7);
+        switch (i->funct7) {
+        case 0x0:
+            strcpy(i->instr, "add");
             printf("instr = %s\n", i->instr);
             break;
-        case LD:
-            if (i->funct3 != 0x3) {
-                printError(i, ERR_FUNCT3);
-                return;
-            }
-            printf("funct3 = %x\n", i->funct3);
-            strcpy(i->instr, "ld");
-            printf("instr = %s\n", i->instr);
-            break;
-        case SD:
-            if (i->funct3 != 0x3) {
-                printError(i, ERR_FUNCT3);
-                return;
-            }
-            printf("funct3 = %x\n", i->funct3);
-            strcpy(i->instr, "sd");
+        case 0x20:
+            strcpy(i->instr, "sub");
             printf("instr = %s\n", i->instr);
             break;
         default:
             break;
+        }
+        break;
+    case ADDI:
+    case LD:
+    case SD:
+        i->immediate = (funct7 << IMM_UPPER);
+        printf("immediate (upper) = %d\n", i->immediate);
+        break;
+    default:
+        break;
     }
 }
