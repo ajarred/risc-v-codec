@@ -39,3 +39,16 @@ void obtainInstruction(instruction* i, const char* s) {
     }
     return;
 }
+
+void obtainRd(instruction*i, const char* s) {
+    char instr[5] = "";
+    char rs1[5] = "";
+    char rs2[5] = "";
+    char rd[5] = "";
+    if (sscanf(s, "%4s %4[^,], %4[^,], %4s", instr, rs1, rs2, rd) == 4) {
+        printf("instr = %s, rd = %s, rs1 = %s, rs1 = %s\n", instr, rd, rs1, rs2);
+    } else {
+        printf("error\n");
+        printf("instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
+    } 
+}
