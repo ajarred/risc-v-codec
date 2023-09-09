@@ -7,6 +7,13 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+enum Format { 
+    INVALID,
+    R, 
+    I, 
+    S 
+};
+
 enum BitPlace {
     BIT_OPCODE = 0,
     BIT_RD = 7,

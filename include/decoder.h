@@ -7,13 +7,6 @@
 #define MIN_SIGNED_BIT -2048
 #define MAX_SIGNED_BIT 2047
 
-enum Format { 
-    INVALID,
-    R, 
-    I, 
-    S 
-};
-
 enum ErrorType {
     ERR_OPCODE,
     ERR_FUNCT3,
