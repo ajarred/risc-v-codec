@@ -2,9 +2,10 @@
 #include "../include/encoder.h"
 
 int main() {
-    printf("RISC-V Instruction Codec\n"
+    printf("RISC-V Instruction Codec v.0.0.1\n"
     "Input options:\n"
-    "Hex Number (e.g., 0x1989),\n"
+    "Hex Number (e.g., 0x3100B3)\n"
+    "OR\n"
     "Assembly Instruction (e.g., add x1, x2, x3)\n"
     "Press Ctrl-C to terminate\n");
     while (1) {

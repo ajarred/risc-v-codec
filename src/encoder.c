@@ -28,7 +28,7 @@ void printEncodeError(instruction*i, const enum ErrorType err) {
         fprintf(stderr, "Invalid I-type instruction input\n");
         break;
     case ERR_INSTR_S:
-        fprintf(stderr, "Invalid I-type instruction input\n");
+        fprintf(stderr, "Invalid S-type instruction input\n");
         break;
     case ERR_REGISTER_OVERFLOW:
         fprintf(stderr, "Invalid register is greater than 31\n");
