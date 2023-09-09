@@ -1,11 +1,11 @@
-# Define source and header directories
+# Source & header directories
 SRCDIR = src
 INCDIR = include
 
-# List source files
-SRC = $(SRCDIR)/risc.c $(SRCDIR)/decoder.c $(SRCDIR)/encoder.c
+# Source files (wildcard pattern)
+SRC = $(wildcard $(SRCDIR)/*.c)
 
-# Compiler and flags
+# Compiler & flags
 CC = gcc
 CFLAGS = -std=c99 -Wall -I$(INCDIR)
 
