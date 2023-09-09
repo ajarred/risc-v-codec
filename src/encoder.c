@@ -221,9 +221,7 @@ void obtainInput(instruction* i) {
         break;
     case S:
         unsigned int immLower = i->immediate & MASK_5BITS; 
-        int immUpper = i->immediate & (MASK_7BITS << IMM_UPPER);
-        printf("lower imm = %u\n", immLower);
-        printf("upper imm = %u\n", immUpper);
+        int immUpper = (i->immediate >> IMM_UPPER) & MASK_7BITS;
         i->input = i->opcode | (immLower << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |

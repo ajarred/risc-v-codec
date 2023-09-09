@@ -8,12 +8,12 @@ int main() {
     "Press Ctrl-C to terminate\n");
     while (1) {
         char input[255];
-        unsigned int n;
         printf("risc>");
         if (fgets(input, sizeof(input), stdin) == NULL) {
             break; 
         }
         if (strncmp(input, "0x", 2) == 0) {
+            unsigned int n;
             if (convertStrToUint(input, &n)) {
                 instruction* risc = malloc(sizeof(instruction));
                 risc->input = n;
