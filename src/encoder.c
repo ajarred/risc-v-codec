@@ -8,7 +8,8 @@ enum ErrorType {
     ERR_INSTR_S,
     ERR_REGISTER_OVERFLOW,
     ERR_RD_X0,
-    ERR_IMM_LIMIT
+    ERR_IMM_LIMIT,
+    ERR_RS1_X0
 };
 
 void printEncodeError(instruction*i, const enum ErrorType err) {
@@ -38,6 +39,8 @@ void printEncodeError(instruction*i, const enum ErrorType err) {
     case ERR_IMM_LIMIT:
         fprintf(stderr, "Immediate is not within limits\n");
         break;
+    case ERR_RS1_X0:
+        fprintf(stderr, "Invalid rs1: x0 cannot be modified\n");
     default:
         break;
     }
@@ -193,11 +196,26 @@ void obtainArguments(instruction* i, const char* s) {
     case S:
         // format: sd rs2, imm (rs1)
         if (strcmp(i->instr, "sd") == 0) {
-            if (sscanf(s, "%s x%[^,], %[-0-9] ( x%[^)] )", instr, rs2, imm, rs1) == 4) {
+            if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rs2, imm, rs1) == 4) {
                 // printf("String: instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
+                if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
+                    return;
+                }
                 i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
                 i->immediate = (int)strtoul(imm, NULL, 10);
                 i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
+                if (i->rs1 > 31 || i->rs2 > 31) {
+                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
+                    return;
+                }
+                if (i->rs1 == 0x0) {
+                    printEncodeError(i, ERR_RS1_X0);
+                    return;
+                }
+                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
+                    printEncodeError(i, ERR_IMM_LIMIT);
+                }
                 // printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
             } else {
                 printEncodeError(i, ERR_INSTR_S);
