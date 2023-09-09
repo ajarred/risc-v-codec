@@ -110,11 +110,11 @@ void obtainArguments(instruction* i, const char* s) {
         // format: sd rs2, imm (rs1)
         if (strcmp(i->instr, "sd") == 0) {
             if (sscanf(s, "%s x%[^,], %[-0-9] ( x%[^)] )", instr, rs2, imm, rs1) == 4) {
-                printf("String: instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
+                // printf("String: instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
                 i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
                 i->immediate = (int)strtoul(imm, NULL, 10);
                 i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
-                printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
+                // printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
@@ -149,7 +149,6 @@ void obtainFunct7(instruction* i) {
     }
 }
 
-// funct3
 void obtainFunct3(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
@@ -167,12 +166,36 @@ void obtainFunct3(instruction* i) {
         } 
 }
 
-// opcode
 void obtainOpcode(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
     }
-
+    switch(i->type) {
+    case R:
+        if ((strcmp(i->instr, "add") == 0) || 
+        (strcmp(i->instr, "sub") == 0)) {
+            i->opcode = 0x33;
+        }
+        printf("opcode = %x\n", i->opcode);
+        break;
+    case I:
+        if (strcmp(i->instr, "addi") == 0) {
+            i->opcode = 0x13;
+        }
+        if (strcmp(i->instr, "ld") == 0) {
+            i->opcode = 0x3;
+        }
+        printf("opcode = %x\n", i->opcode);
+        break;
+    case S:
+        if (strcmp(i->instr, "sd") == 0) {
+            i->opcode = 0x23;
+        }
+        printf("opcode = %x\n", i->opcode);
+        break;
+    default:
+        break;
+    }
 }
 
 // input

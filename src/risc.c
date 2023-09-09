@@ -26,6 +26,7 @@ int main() {
                 obtainArguments(risc, input);
                 obtainFunct7(risc);
                 obtainFunct3(risc);
+                obtainOpcode(risc);
             }
             free(risc);
         } else {
