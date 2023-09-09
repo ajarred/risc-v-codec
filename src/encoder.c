@@ -203,4 +203,34 @@ void obtainInput(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
     }
+    switch(i->type) {
+    case R:
+        i->input = i->opcode | (i->rd << BIT_RD) | 
+            (i->funct3 << BIT_FUNCT3) | 
+            (i->rs1 << BIT_RS1) |
+            (i->rs2 << BIT_RS2) |
+            (i->funct7 << BIT_FUNCT7);
+        // printf("input = 0x%x\n", i->input);
+        break;
+    case I:
+        // opcode
+        // rd
+        // funct3
+        // imm
+
+        // input
+        break;
+    case S:
+        // opcode
+        // imm (L)
+        // funct3
+        // rs1
+        // rs2
+        // imm (U)
+
+        // input
+        break;
+    default:
+        break;
+    }
 }

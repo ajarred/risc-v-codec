@@ -27,6 +27,7 @@ int main() {
                 obtainFunct7(risc);
                 obtainFunct3(risc);
                 obtainOpcode(risc);
+                obtainInput(risc);
             }
             free(risc);
         } else {
