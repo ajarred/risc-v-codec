@@ -29,9 +29,9 @@
 // instr, type, 
 bool isValidInstruction(const char* s);
 
-void obtainInstruction(instruction* i, const char* s);
+bool obtainInstruction(instruction* i, const char* s);
 
-void obtainRegisters(instruction*i, const char* s);
+void obtainArguments(instruction*i, const char* s);
 
 void obtainRd(instruction*i, const char* s);
 // obtain rd

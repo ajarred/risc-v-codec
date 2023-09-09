@@ -22,10 +22,12 @@ int main() {
             }
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
-            obtainInstruction(risc, input);
-            // printf("instr = %s\n", risc->instr);
-            // printf("type = %d\n", risc->type);
-            obtainRegisters(risc, input);
+            if (obtainInstruction(risc, input)) {
+                // printf("instr = %s\n", risc->instr);
+                // printf("type = %d\n", risc->type);
+                obtainArguments(risc, input);
+            }
+
             free(risc);
         } else {
             fprintf(stderr, "Invalid input.\n");
