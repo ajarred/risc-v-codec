@@ -48,12 +48,17 @@ bool obtainInstruction(instruction* i, const char* s) {
 }
 
 void obtainArguments(instruction* i, const char* s) {
+    if (i == NULL) {
+        return;
+    }
+    if (s == NULL || strlen(s) == 0) {
+        return;
+    }
     char instr[5] = "";
     char rs1[5] = "";
     char rs2[5] = "";
     char rd[5] = "";
     char imm[5] = "";
-    
     switch (i->type) {
     case R:
         // format: add rd, rs1, rs2
@@ -63,7 +68,7 @@ void obtainArguments(instruction* i, const char* s) {
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
-            printf("instr = %s, rd = x%d, rs1 = x%d, rs2 = x%d\n", i->instr, i->rd, i->rs1, i->rs2);
+            // printf("instr = %s, rd = x%d, rs1 = x%d, rs2 = x%d\n", i->instr, i->rd, i->rs1, i->rs2);
         } else {
             fprintf(stderr, "Invalid R-type instruction input\n");
             printf("instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
@@ -73,11 +78,11 @@ void obtainArguments(instruction* i, const char* s) {
         // format: addi rd, rs1, imm
         if (strcmp(i->instr, "addi") == 0) {
             if (sscanf(s, "%s x%[^,], x%[^,], %[-0-9]", instr, rd, rs1, imm) == 4) {
-                printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
-                printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
+                // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
@@ -86,11 +91,11 @@ void obtainArguments(instruction* i, const char* s) {
         // format: ld rd, imm (rs1)
         if (strcmp(i->instr, "ld") == 0) {
             if (sscanf(s, "%s x%[^,], %[-0-9] ( x%[^)] )", instr, rd, imm, rs1) == 4) {
-                printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
-                printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
+                // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
@@ -99,6 +104,20 @@ void obtainArguments(instruction* i, const char* s) {
         break;
     case S:
         // format: sd rs2, imm (rs1)
+        if (strcmp(i->instr, "sd") == 0) {
+            if (sscanf(s, "%s x%[^,], %[-0-9] ( x%[^)] )", instr, rs2, imm, rs1) == 4) {
+                printf("String: instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
+                i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
+                i->immediate = (int)strtoul(imm, NULL, 10);
+                i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
+                printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
+            } else {
+                fprintf(stderr, "Invalid I-type instruction input\n");
+                printf("instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
+            } 
+        }
+        break;
+    default:
         break;
     }
 }
