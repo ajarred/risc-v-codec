@@ -23,11 +23,7 @@ int main() {
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
             if (obtainInstruction(risc, input)) {
-                obtainArguments(risc, input);
-                obtainFunct7(risc);
-                obtainFunct3(risc);
-                obtainOpcode(risc);
-                obtainInput(risc);
+                encodeInstructions(risc, input);
             }
             free(risc);
         } else {

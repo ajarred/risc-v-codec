@@ -98,7 +98,7 @@ void obtainArguments(instruction* i, const char* s) {
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
-                printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
+                // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
@@ -210,10 +210,9 @@ void obtainInput(instruction* i) {
             (i->rs1 << BIT_RS1) |
             (i->rs2 << BIT_RS2) |
             (i->funct7 << BIT_FUNCT7);
-        // printf("input = 0x%x\n", i->input);
+        printf("input = 0x%x\n", i->input);
         break;
     case I:
-        // rs1 ?
         i->input = i->opcode | (i->rd << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |
@@ -222,7 +221,9 @@ void obtainInput(instruction* i) {
         break;
     case S:
         unsigned int immLower = i->immediate & MASK_5BITS; 
-        int immUpper = (i->immediate << IMM_UPPER) & MASK_7BITS;
+        int immUpper = i->immediate & (MASK_7BITS << IMM_UPPER);
+        printf("lower imm = %u\n", immLower);
+        printf("upper imm = %u\n", immUpper);
         i->input = i->opcode | (immLower << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |
@@ -233,4 +234,12 @@ void obtainInput(instruction* i) {
     default:
         break;
     }
+}
+
+void encodeInstructions(instruction* i, const char* s) {
+    obtainArguments(i, s);
+    obtainFunct7(i);
+    obtainFunct3(i);
+    obtainOpcode(i);
+    obtainInput(i);
 }

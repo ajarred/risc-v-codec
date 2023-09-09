@@ -17,4 +17,6 @@ void obtainOpcode(instruction* i);
 
 void obtainInput(instruction* i);
 
+void encodeInstructions(instruction* i, const char* s);
+
 #endif
