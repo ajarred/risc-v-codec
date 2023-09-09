@@ -18,3 +18,7 @@ After compilation, run the program with the following command:
 ```
 ## Current Instruction List
 add, sub, addi, ld, sd
+
+## Screenshot
+![image](https://github.com/ajarred/risc-v-codec/assets/69410244/c618514c-f5b3-4206-bdbd-0b854f772846)
+
