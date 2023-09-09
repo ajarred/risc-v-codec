@@ -25,6 +25,7 @@ int main() {
             if (obtainInstruction(risc, input)) {
                 obtainArguments(risc, input);
                 obtainFunct7(risc);
+                obtainFunct3(risc);
             }
             free(risc);
         } else {
