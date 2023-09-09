@@ -27,7 +27,6 @@ int main() {
                 // printf("type = %d\n", risc->type);
                 obtainArguments(risc, input);
             }
-
             free(risc);
         } else {
             fprintf(stderr, "Invalid input.\n");
