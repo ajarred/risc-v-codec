@@ -1,5 +1,21 @@
 #include "../include/decoder.h"
 
+enum ErrorType {
+    ERR_OPCODE,
+    ERR_FUNCT3,
+    ERR_FUNCT7,
+    ERR_X0_RD,
+    ERR_X0_RS1,
+    ERR_IMM,
+};
+
+enum Opcode {
+    ADD = 0x33u, 
+    ADDI = 0x13u,
+    LD = 0x3u,
+    SD = 0x23u
+};
+
 bool isHex(char* str) {
     size_t length = strlen(str);
     if (length > 0 && str[length - 1] == '\n') {

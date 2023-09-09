@@ -7,27 +7,9 @@
 #define MIN_SIGNED_BIT -2048
 #define MAX_SIGNED_BIT 2047
 
-enum ErrorType {
-    ERR_OPCODE,
-    ERR_FUNCT3,
-    ERR_FUNCT7,
-    ERR_X0_RD,
-    ERR_X0_RS1,
-    ERR_IMM,
-};
-
-enum Opcode {
-    ADD = 0x33u, 
-    ADDI = 0x13u,
-    LD = 0x3u,
-    SD = 0x23u
-};
-
 bool isHex(char* str);
 
 bool convertStrToUint(char* str, unsigned int *n);
-
-void printError(instruction* i, const enum ErrorType err);
 
 void parseOpcode(instruction* i);
 
