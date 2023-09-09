@@ -154,21 +154,17 @@ void obtainFunct3(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
     }
-    switch(i->type) {
-    case R:
-        if ((strcmp(i->instr, "add") == 0) || 
-           (strcmp(i->instr, "sub") == 0)) {
+    if ((strcmp(i->instr, "add") == 0) || 
+        (strcmp(i->instr, "sub") == 0) ||
+        (strcmp(i->instr, "addi")== 0)) {
             i->funct3 = 0x0;
             // printf("funct3 = %x\n", i->funct3);
         } 
-        break;
-    case I:
-        break;
-    case S: 
-        break;
-    default:
-        break;   
-    }
+    if ((strcmp(i->instr, "ld") == 0) ||
+        (strcmp(i->instr, "sd") == 0)) {
+            i->funct3 = 0x3;
+            // printf("funct3 = %x\n", i->funct3);
+        } 
 }
 
 // opcode
