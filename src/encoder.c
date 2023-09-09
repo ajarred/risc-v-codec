@@ -1,33 +1,37 @@
 #include "../include/encoder.h"
 
 enum ErrorType {
+    ERR_BUFFER_OVERFLOW,
     ERR_INSTR,
     ERR_INSTR_R,
     ERR_INSTR_I,
     ERR_INSTR_S,
+    ERR_REGISTER_OVERFLOW,
     ERR_RD_X0
 };
 
 void printEncodeError(instruction*i, const enum ErrorType err) {
+    i->type = INVALID;
     switch(err) {
+    case ERR_BUFFER_OVERFLOW:
+        fprintf(stderr, "Buffer overflow\n");
+        break;
     case ERR_INSTR:
-        i->type = INVALID;
         fprintf(stderr, "Invalid instruction\n");
         break;
     case ERR_INSTR_R:
         fprintf(stderr, "Invalid R-type instruction input\n");
-        i->type = INVALID; 
         break;
     case ERR_INSTR_I:
         fprintf(stderr, "Invalid I-type instruction input\n");
-        i->type = INVALID; 
         break;
     case ERR_INSTR_S:
         fprintf(stderr, "Invalid I-type instruction input\n");
-        i->type = INVALID; 
+        break;
+    case ERR_REGISTER_OVERFLOW:
+        fprintf(stderr, "Invalid register is greater than 31\n");
         break;
     case ERR_RD_X0:
-        i->type = INVALID;
         fprintf(stderr, "Invalid rd: x0 cannot be modified\n");
         break;
     default:
@@ -89,20 +93,31 @@ void obtainArguments(instruction* i, const char* s) {
     if (s == NULL || strlen(s) == 0) {
         return;
     }
-    char instr[5] = "";
-    char rs1[5] = "";
-    char rs2[5] = "";
-    char rd[5] = "";
-    char imm[5] = "";
+    char instr[6] = "";
+    char rs1[4] = "";
+    char rs2[4] = "";
+    char rd[4] = "";
+    char imm[6] = "";
     switch (i->type) {
     case R:
         // format: add rd, rs1, rs2
         // format: sub rd, rs1, rs2
-        if (sscanf(s, "%s x%[^,], x%[^,], x%s", instr, rd, rs1, rs2) == 4) {
+        if (sscanf(s, "%5s x%3[^,], x%3[^,], x%3s", instr, rd, rs1, rs2) == 4) {
             // printf("String: instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
+
+            if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(rs2) > 3) {
+                printEncodeError(i, ERR_BUFFER_OVERFLOW);
+                return;
+            }
+
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
+
+            if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
+                printEncodeError(i, ERR_REGISTER_OVERFLOW);
+                return;
+            }
             if (i->rd == 0x0) {
                 printEncodeError(i, ERR_RD_X0);
                 return;
