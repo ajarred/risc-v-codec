@@ -23,11 +23,8 @@ void add_history(char* unused) {}
 
 int main() {
     printf("RISC-V Instruction Codec v.0.0.1\n"
-    "Input options:\n"
-    "Hex Number (e.g., 0x3100B3)\n"
-    "OR\n"
-    "Assembly Instruction (e.g., add x1, x2, x3)\n"
-    "Press Ctrl-C to terminate\n");
+        "Input hex or assembly instructions\n"
+        "Input help for more information\n");
     while (1) {
         char* input = readline("risc> ");
         add_history(input);
@@ -57,8 +54,14 @@ int main() {
                 "sd rs2, imm (rs1)\n");
         } else if (strcmp(input, "quit") == 0) {
             exit(0);
-        }
-        else {
+        } else if (strcmp(input, "help") == 0) {
+            printf("Available commands:\n"
+                "hex number (e.g., 0x3100B3) = converts to assembly instruction\n"
+                "assembly instruction (e.g., add x1, x2, x3) = converts to hex number\n"
+                "clear = clears the screen\n"
+                "list = lists all available assembly instruction formats\n"
+                "quit = exits the program\n");
+        } else {
             fprintf(stderr, "Invalid input.\n");
         }
         free(input);
