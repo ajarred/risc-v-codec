@@ -3,8 +3,9 @@
 
 int main() {
     printf("RISC-V Instruction Codec\n"
-    "Please input a hex string starting with 0x\n"
-    "Max 8-characters excl. 0x (e.g., 0x1989)\n"
+    "Input options:\n"
+    "Hex Number (e.g., 0x1989),\n"
+    "Assembly Instruction (e.g., add x1, x2, x3)\n"
     "Press Ctrl-C to terminate\n");
     while (1) {
         char input[255];
