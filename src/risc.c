@@ -55,6 +55,8 @@ int main() {
                 "addi rd, rs1, imm\n"
                 "ld rd, imm (rs1)\n"
                 "sd rs2, imm (rs1)\n");
+        } else if (strcmp(input, "quit") == 0) {
+            exit(0);
         }
         else {
             fprintf(stderr, "Invalid input.\n");
