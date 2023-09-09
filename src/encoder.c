@@ -44,11 +44,12 @@ bool obtainInstruction(instruction* i, const char* s) {
         i->type = S;
         return true;
     }
+    i->type = INVALID;
     return false;
 }
 
 void obtainArguments(instruction* i, const char* s) {
-    if (i == NULL) {
+    if (i == NULL || i->type == INVALID) {
         return;
     }
     if (s == NULL || strlen(s) == 0) {
@@ -72,6 +73,7 @@ void obtainArguments(instruction* i, const char* s) {
         } else {
             fprintf(stderr, "Invalid R-type instruction input\n");
             printf("instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
+            i->type = INVALID; 
         } 
         break;
     case I:
@@ -86,6 +88,7 @@ void obtainArguments(instruction* i, const char* s) {
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                i->type = INVALID; 
             }
         }
         // format: ld rd, imm (rs1)
@@ -99,6 +102,7 @@ void obtainArguments(instruction* i, const char* s) {
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                i->type = INVALID; 
             } 
         }
         break;
@@ -114,10 +118,56 @@ void obtainArguments(instruction* i, const char* s) {
             } else {
                 fprintf(stderr, "Invalid I-type instruction input\n");
                 printf("instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
+                i->type = INVALID; 
             } 
         }
         break;
     default:
         break;
+    }
+}
+
+void obtainFunct7(instruction* i) {
+    if (i == NULL || i->type == INVALID) {
+        return;
+    }
+    switch(i->type) {
+    case R:
+        if (strcmp(i->instr, "add") == 0) {
+            i->funct7 = 0x0;
+            // printf("funct7 = %x\n", i->funct7);
+        }
+        if (strcmp(i->instr, "sub") == 0) {
+            i->funct7 = 0x20;
+            // printf("funct7 = %x\n", i->funct7);
+        } 
+        break;
+    case I:
+    case S:
+    default:
+        break;
+    }
+}
+
+// funct3
+void obtainFunct3(instruction* i) {
+    if (i == NULL || i->type == INVALID) {
+        return;
+    }
+
+}
+
+// opcode
+void obtainOpcode(instruction* i) {
+    if (i == NULL || i->type == INVALID) {
+        return;
+    }
+
+}
+
+// input
+void obtainInput(instruction* i) {
+    if (i == NULL || i->type == INVALID) {
+        return;
     }
 }

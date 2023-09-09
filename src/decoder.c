@@ -311,28 +311,16 @@ void printInstructions(instruction* i) {
     case R:
         printf("%s x%d, x%d, x%d\n", 
         i->instr, i->rd, i->rs1, i->rs2);
-        // std::cout << i->instr << " x" <<
-        // std::dec << i->rd << ", x" << 
-        // std::dec << i->rs1 << ", x" <<
-        // std::dec << i->rs2 << '\n'; 
         break;
     case I:
         switch (i->opcode) {
         case ADDI:
             printf("%s x%d, x%d, %d\n", 
             i->instr, i->rd, i->rs1, i->immediate);
-            // std::cout << i->instr << " x" <<
-            // std::dec << i->rd << ", x" << 
-            // std::dec << i->rs1 << ", " <<
-            // i->immediate << '\n';
             break;
         case LD:
             printf("%s x%d, %d, (x%d)\n", 
             i->instr, i->rd, i->immediate, i->rd);
-            // std::cout << i->instr << " x" <<
-            // std::dec << i->rd << ", " << 
-            // std::dec << i->immediate << " (x" <<
-            // std::dec << i->rs1 << ")\n";
             break;
         default:
             break;
@@ -341,10 +329,6 @@ void printInstructions(instruction* i) {
     case S:
         printf("%s x%d, %d (x%d)\n", 
         i->instr, i->rs2, i->immediate, i->rs1);
-        // std::cout << i->instr << " x" <<
-        // std::dec << i->rs2 << ", " << 
-        // std::dec << i->immediate << " (x" <<
-        // std::dec << i->rs1 << ")\n";
         break;
     default:
         break;

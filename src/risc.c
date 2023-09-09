@@ -23,9 +23,8 @@ int main() {
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
             if (obtainInstruction(risc, input)) {
-                // printf("instr = %s\n", risc->instr);
-                // printf("type = %d\n", risc->type);
                 obtainArguments(risc, input);
+                obtainFunct7(risc);
             }
             free(risc);
         } else {

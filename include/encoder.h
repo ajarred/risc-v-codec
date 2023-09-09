@@ -46,7 +46,7 @@ void obtainRs2(instruction*i, const char* s);
 // obtain rs2
 // bits 20-24 ->
 
-void obtainFunct7(instruction*i, const char* s);
+void obtainFunct7(instruction*i);
 // obtain funct7
 // input
 // funct7 || imm (up)
