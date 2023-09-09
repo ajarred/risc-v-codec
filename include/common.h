@@ -7,6 +7,10 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+// 12-bit immediate value limits
+#define MIN_SIGNED_BIT -2048
+#define MAX_SIGNED_BIT 2047
+
 enum Format { 
     INVALID,
     R, 

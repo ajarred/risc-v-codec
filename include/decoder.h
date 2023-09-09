@@ -3,10 +3,6 @@
 
 #include "../include/common.h"
 
-// 12-bit immediate value limits
-#define MIN_SIGNED_BIT -2048
-#define MAX_SIGNED_BIT 2047
-
 bool isHex(char* str);
 
 bool convertStrToUint(char* str, unsigned int *n);
