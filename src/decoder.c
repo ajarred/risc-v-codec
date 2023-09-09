@@ -21,7 +21,7 @@ bool convertStrToUint(char* str, unsigned int *n) {
     if(!isHex(str))
     {
         fprintf(stderr, "Invalid input. Please input a valid hex string\n");
-        printf("%ld\n", strlen(str));
+        printf("String length = %ld\n", strlen(str));
         return false;
     }
     *n = (unsigned int)strtol(str, NULL, 16);

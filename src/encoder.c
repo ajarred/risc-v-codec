@@ -12,6 +12,13 @@ bool isValidInstruction(const char* s) {
 }
 
 void obtainInstruction(instruction* i, const char* s) {
+    if (i == NULL) {
+        return;
+    }
+    if (s == NULL || strlen(s) == 0) {
+        fprintf(stderr, "Invalid string input\n");
+        return;
+    }
     if (strncmp(s, "addi",4) == 0) {
         strcpy(i->instr, "addi");
         i->type = I;
@@ -40,7 +47,7 @@ void obtainInstruction(instruction* i, const char* s) {
     return;
 }
 
-void obtainRd(instruction*i, const char* s) {
+void obtainRegisters(instruction*i, const char* s) {
     char instr[5] = "";
     char rs1[5] = "";
     char rs2[5] = "";
@@ -48,7 +55,7 @@ void obtainRd(instruction*i, const char* s) {
     if (sscanf(s, "%4s %4[^,], %4[^,], %4s", instr, rs1, rs2, rd) == 4) {
         printf("instr = %s, rd = %s, rs1 = %s, rs1 = %s\n", instr, rd, rs1, rs2);
     } else {
-        printf("error\n");
+        fprintf(stderr, "Invalid assembly instruction input\n");
         printf("instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
     } 
 }

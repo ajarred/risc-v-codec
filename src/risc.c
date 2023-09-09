@@ -25,7 +25,7 @@ int main() {
             obtainInstruction(risc, input);
             // printf("instr = %s\n", risc->instr);
             // printf("type = %d\n", risc->type);
-            obtainRd(risc, input);
+            obtainRegisters(risc, input);
             free(risc);
         } else {
             fprintf(stderr, "Invalid input.\n");

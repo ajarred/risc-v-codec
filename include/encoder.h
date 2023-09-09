@@ -31,6 +31,8 @@ bool isValidInstruction(const char* s);
 
 void obtainInstruction(instruction* i, const char* s);
 
+void obtainRegisters(instruction*i, const char* s);
+
 void obtainRd(instruction*i, const char* s);
 // obtain rd
 // bits 7-11 ->
