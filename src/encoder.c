@@ -1,5 +1,40 @@
 #include "../include/encoder.h"
 
+enum ErrorType {
+    ERR_INSTR,
+    ERR_INSTR_R,
+    ERR_INSTR_I,
+    ERR_INSTR_S,
+    ERR_RD_X0
+};
+
+void printEncodeError(instruction*i, const enum ErrorType err) {
+    switch(err) {
+    case ERR_INSTR:
+        i->type = INVALID;
+        fprintf(stderr, "Invalid instruction\n");
+        break;
+    case ERR_INSTR_R:
+        fprintf(stderr, "Invalid R-type instruction input\n");
+        i->type = INVALID; 
+        break;
+    case ERR_INSTR_I:
+        fprintf(stderr, "Invalid I-type instruction input\n");
+        i->type = INVALID; 
+        break;
+    case ERR_INSTR_S:
+        fprintf(stderr, "Invalid I-type instruction input\n");
+        i->type = INVALID; 
+        break;
+    case ERR_RD_X0:
+        i->type = INVALID;
+        fprintf(stderr, "Invalid rd: x0 cannot be modified\n");
+        break;
+    default:
+        break;
+    }
+}
+
 bool isValidInstruction(const char* s) {
     if (strncmp(s, "add", 3) == 0 ||
         strncmp(s, "sub", 3) == 0 ||
@@ -16,7 +51,6 @@ bool obtainInstruction(instruction* i, const char* s) {
         return false;
     }
     if (s == NULL || strlen(s) == 0) {
-        fprintf(stderr, "Invalid string input\n");
         return false;
     }
     if (strncmp(s, "addi",4) == 0) {
@@ -44,7 +78,7 @@ bool obtainInstruction(instruction* i, const char* s) {
         i->type = S;
         return true;
     }
-    i->type = INVALID;
+    printEncodeError(i, ERR_INSTR);
     return false;
 }
 
@@ -69,11 +103,14 @@ void obtainArguments(instruction* i, const char* s) {
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
+            if (i->rd == 0x0) {
+                printEncodeError(i, ERR_RD_X0);
+                return;
+            }
             // printf("instr = %s, rd = x%d, rs1 = x%d, rs2 = x%d\n", i->instr, i->rd, i->rs1, i->rs2);
         } else {
-            fprintf(stderr, "Invalid R-type instruction input\n");
-            printf("instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
-            i->type = INVALID; 
+            printEncodeError(i, ERR_INSTR_R);
+            return;
         } 
         break;
     case I:
@@ -86,9 +123,8 @@ void obtainArguments(instruction* i, const char* s) {
                 i->immediate = (int)strtol(imm, NULL, 10);
                 // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
-                fprintf(stderr, "Invalid I-type instruction input\n");
-                printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
-                i->type = INVALID; 
+                printEncodeError(i, ERR_INSTR_I);
+                return;
             }
         }
         // format: ld rd, imm (rs1)
@@ -100,9 +136,8 @@ void obtainArguments(instruction* i, const char* s) {
                 i->immediate = (int)strtol(imm, NULL, 10);
                 // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
-                fprintf(stderr, "Invalid I-type instruction input\n");
-                printf("instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
-                i->type = INVALID; 
+                printEncodeError(i, ERR_INSTR_I);
+                return;
             } 
         }
         break;
@@ -116,9 +151,8 @@ void obtainArguments(instruction* i, const char* s) {
                 i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
                 // printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
             } else {
-                fprintf(stderr, "Invalid I-type instruction input\n");
-                printf("instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
-                i->type = INVALID; 
+                printEncodeError(i, ERR_INSTR_S);
+                return;
             } 
         }
         break;
