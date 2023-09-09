@@ -51,9 +51,9 @@ enum Imm {
     SIGN_EXTENDED_SHIFT = 20 
 };
 
-bool isHex(const char* str);
+bool isHex(char* str);
 
-bool convertStrToUint(const char* str, unsigned int *n);
+bool convertStrToUint(char* str, unsigned int *n);
 
 void printError(instruction* i, const enum ErrorType err);
 

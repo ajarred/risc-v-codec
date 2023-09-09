@@ -10,7 +10,9 @@ int main() {
         char input[255];
         unsigned int n;
         printf("risc>");
-        scanf("%s", input);
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            break; 
+        }
         if (strncmp(input, "0x", 2) == 0) {
             if (convertStrToUint(input, &n)) {
             instruction* risc = malloc(sizeof(instruction));
@@ -21,8 +23,10 @@ int main() {
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
             obtainInstruction(risc, input);
-            printf("instr = %s\n", risc->instr);
-            printf("type = %d\n", risc->type);
+            // printf("instr = %s\n", risc->instr);
+            // printf("type = %d\n", risc->type);
+            obtainRd(risc, input);
+            free(risc);
         } else {
             fprintf(stderr, "Invalid input.\n");
         }

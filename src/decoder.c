@@ -1,7 +1,11 @@
 #include "../include/decoder.h"
 
-bool isHex(const char* str) {
+bool isHex(char* str) {
     size_t length = strlen(str);
+    if (length > 0 && str[length - 1] == '\n') {
+        str[length - 1] = '\0';
+        length--;
+    }
     if (length <= 10 && strncmp(str, "0x", 2) == 0) {
         for (size_t i = 2; i < length; i++) {
             if (!isxdigit((unsigned char)str[i])) {
@@ -13,10 +17,11 @@ bool isHex(const char* str) {
     return false;
 }
 
-bool convertStrToUint(const char* str, unsigned int *n) {
+bool convertStrToUint(char* str, unsigned int *n) {
     if(!isHex(str))
     {
         fprintf(stderr, "Invalid input. Please input a valid hex string\n");
+        printf("%ld\n", strlen(str));
         return false;
     }
     *n = (unsigned int)strtol(str, NULL, 16);
