@@ -7,7 +7,8 @@ enum ErrorType {
     ERR_INSTR_I,
     ERR_INSTR_S,
     ERR_REGISTER_OVERFLOW,
-    ERR_RD_X0
+    ERR_RD_X0,
+    ERR_IMM_LIMIT
 };
 
 void printEncodeError(instruction*i, const enum ErrorType err) {
@@ -33,6 +34,9 @@ void printEncodeError(instruction*i, const enum ErrorType err) {
         break;
     case ERR_RD_X0:
         fprintf(stderr, "Invalid rd: x0 cannot be modified\n");
+        break;
+    case ERR_IMM_LIMIT:
+        fprintf(stderr, "Immediate is not within limits\n");
         break;
     default:
         break;
@@ -104,12 +108,10 @@ void obtainArguments(instruction* i, const char* s) {
         // format: sub rd, rs1, rs2
         if (sscanf(s, "%5s x%3[^,], x%3[^,], x%3s", instr, rd, rs1, rs2) == 4) {
             // printf("String: instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
-
             if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(rs2) > 3) {
                 printEncodeError(i, ERR_BUFFER_OVERFLOW);
                 return;
             }
-
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
@@ -131,11 +133,27 @@ void obtainArguments(instruction* i, const char* s) {
     case I:
         // format: addi rd, rs1, imm
         if (strcmp(i->instr, "addi") == 0) {
-            if (sscanf(s, "%s x%[^,], x%[^,], %[-0-9]", instr, rd, rs1, imm) == 4) {
+            if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rd, rs1, imm) == 4) {
                 // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
+                    return;
+                }
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
+
+                if (i->rd > 31 || i->rs1 > 31) {
+                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
+                    return;
+                }
+                if (i->rd == 0x0) {
+                    printEncodeError(i, ERR_RD_X0);
+                    return;
+                }
+                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
+                    printEncodeError(i, ERR_IMM_LIMIT);
+                }
                 // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 printEncodeError(i, ERR_INSTR_I);
@@ -144,11 +162,27 @@ void obtainArguments(instruction* i, const char* s) {
         }
         // format: ld rd, imm (rs1)
         if (strcmp(i->instr, "ld") == 0) {
-            if (sscanf(s, "%s x%[^,], %[-0-9] ( x%[^)] )", instr, rd, imm, rs1) == 4) {
+            if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rd, imm, rs1) == 4) {
                 // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
+                if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
+                    return;
+                }
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
+
+                if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
+                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
+                    return;
+                }
+                if (i->rd == 0x0) {
+                    printEncodeError(i, ERR_RD_X0);
+                    return;
+                }
+                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
+                    printEncodeError(i, ERR_IMM_LIMIT);
+                }
                 // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 printEncodeError(i, ERR_INSTR_I);
