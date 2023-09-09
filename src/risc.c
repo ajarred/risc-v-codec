@@ -46,6 +46,8 @@ int main() {
                 encodeInstructions(risc, input);
             }
             free(risc);
+        } else if (strcmp(input, "clear") == 0) {
+            system("clear");
         } else {
             fprintf(stderr, "Invalid input.\n");
         }
