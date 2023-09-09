@@ -320,7 +320,7 @@ void printInstructions(instruction* i) {
             break;
         case LD:
             printf("%s x%d, %d, (x%d)\n", 
-            i->instr, i->rd, i->immediate, i->rd);
+            i->instr, i->rd, i->immediate, i->rs1);
             break;
         default:
             break;
