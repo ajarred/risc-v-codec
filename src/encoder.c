@@ -176,7 +176,7 @@ void obtainOpcode(instruction* i) {
         (strcmp(i->instr, "sub") == 0)) {
             i->opcode = 0x33;
         }
-        printf("opcode = %x\n", i->opcode);
+        // printf("opcode = %x\n", i->opcode);
         break;
     case I:
         if (strcmp(i->instr, "addi") == 0) {
@@ -185,13 +185,13 @@ void obtainOpcode(instruction* i) {
         if (strcmp(i->instr, "ld") == 0) {
             i->opcode = 0x3;
         }
-        printf("opcode = %x\n", i->opcode);
+        // printf("opcode = %x\n", i->opcode);
         break;
     case S:
         if (strcmp(i->instr, "sd") == 0) {
             i->opcode = 0x23;
         }
-        printf("opcode = %x\n", i->opcode);
+        // printf("opcode = %x\n", i->opcode);
         break;
     default:
         break;
@@ -213,12 +213,11 @@ void obtainInput(instruction* i) {
         // printf("input = 0x%x\n", i->input);
         break;
     case I:
-        // opcode
-        // rd
-        // funct3
-        // imm
-
-        // input
+        i->input = i->opcode | (i->rd << BIT_RD) |
+            (i->funct3 << BIT_FUNCT3) |
+            (i->rs1 << BIT_RS1) |
+            (i->immediate << BIT_RS2);
+        printf("input = 0x%x\n", i->input);
         break;
     case S:
         // opcode
