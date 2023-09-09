@@ -15,10 +15,10 @@ int main() {
         }
         if (strncmp(input, "0x", 2) == 0) {
             if (convertStrToUint(input, &n)) {
-            instruction* risc = malloc(sizeof(instruction));
-            risc->input = n;
-            decodeInstruction(risc);
-            free(risc); 
+                instruction* risc = malloc(sizeof(instruction));
+                risc->input = n;
+                decodeInstruction(risc);
+                free(risc); 
             }
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
