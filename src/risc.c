@@ -48,7 +48,15 @@ int main() {
             free(risc);
         } else if (strcmp(input, "clear") == 0) {
             system("clear");
-        } else {
+        } else if (strcmp(input, "list") == 0) {
+            printf("Available instruction formats:\n"
+                "add rd, rs1, rs2\n"
+                "sub rd, rs1, rs2\n"
+                "addi rd, rs1, imm\n"
+                "ld rd, imm (rs1)\n"
+                "sd rs2, imm (rs1)\n");
+        }
+        else {
             fprintf(stderr, "Invalid input.\n");
         }
         free(input);
