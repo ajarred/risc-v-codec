@@ -10,7 +10,7 @@ CC = gcc
 CFLAGS = -std=c99 -Wall -I$(INCDIR)
 
 # Linker flags
-LDFLAGS = -ledit -lm
+LDFLAGS = -ledit
 
 # Output binary
 OUTPUT = risc
