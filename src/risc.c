@@ -16,9 +16,12 @@ char* readline(char* prompt) {
 
 void add_history(char* unused) {}
 
-#else
+#elif __APPLE__
 #include <editline/readline.h>
-#include <editline/history.h>
+
+#else 
+#include <editline/history.h> // exclude in mac
+
 #endif
 
 int main() {
