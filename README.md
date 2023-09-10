@@ -14,7 +14,7 @@ make
 ## Running
 After compilation, run the program with the following command:
 ```bash
-./wordle
+./risc
 ```
 ## Current Instruction List
 add, sub, addi, ld, sd
