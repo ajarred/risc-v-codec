@@ -57,40 +57,43 @@ bool isValidInstruction(const char* s) {
     return false;
 }
 
-bool obtainInstruction(instruction* i, const char* s) {
+void obtainInstruction(instruction* i, const char* s) {
+    if (!isValidInstruction(s)) {
+        return;
+    }
     if (i == NULL) {
-        return false;
+        return;
     }
     if (s == NULL || strlen(s) == 0) {
-        return false;
+        return;
     }
     if (strncmp(s, "addi",4) == 0) {
         strcpy(i->instr, "addi");
         i->type = I;
-        return true;
+        return;
     }
     if (strncmp(s, "add", 3) == 0) {
         strcpy(i->instr, "add");
         i->type = R; 
-        return true;
+        return;
     }
     if (strncmp(s, "sub", 3) == 0) {
         strcpy(i->instr, "sub");
         i->type = R;
-        return true;
+        return;
     }
     if (strncmp(s, "ld",  2) == 0) {
         strcpy(i->instr, "ld");
         i->type = I;
-        return true;
+        return;
     }
     if (strncmp(s, "sd",  2) == 0) {
         strcpy(i->instr, "sd");
         i->type = S;
-        return true;
+        return;
     }
     printEncodeError(i, ERR_INSTR);
-    return false;
+    return;
 }
 
 void obtainArguments(instruction* i, const char* s) {

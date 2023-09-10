@@ -39,9 +39,8 @@ int main() {
             }
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
-            if (obtainInstruction(risc, input)) {
-                encodeInstructions(risc, input);
-            }
+            obtainInstruction(risc, input);
+            encodeInstructions(risc, input);
             free(risc);
         } else if (strcmp(input, "clear") == 0) {
             system("clear");

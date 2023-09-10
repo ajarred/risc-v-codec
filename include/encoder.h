@@ -5,7 +5,7 @@
 
 bool isValidInstruction(const char* s);
 
-bool obtainInstruction(instruction* i, const char* s);
+void obtainInstruction(instruction* i, const char* s);
 
 void obtainArguments(instruction* i, const char* s);
 
