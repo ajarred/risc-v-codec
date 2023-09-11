@@ -307,6 +307,8 @@ void obtainInput(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
     }
+    unsigned int immLower;
+    int immUpper;
     switch(i->type) {
     case R:
         i->input = i->opcode | (i->rd << BIT_RD) | 
@@ -324,8 +326,8 @@ void obtainInput(instruction* i) {
         printf("input = 0x%x\n", i->input);
         break;
     case S:
-        unsigned int immLower = i->immediate & MASK_5BITS; 
-        int immUpper = (i->immediate >> IMM_UPPER) & MASK_7BITS;
+        immLower = i->immediate & MASK_5BITS; 
+        immUpper = (i->immediate >> IMM_UPPER) & MASK_7BITS;
         i->input = i->opcode | (immLower << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |
