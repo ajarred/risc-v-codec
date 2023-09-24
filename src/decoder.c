@@ -5,7 +5,6 @@ enum ErrorType {
     ERR_FUNCT3,
     ERR_FUNCT7,
     ERR_X0_RD,
-    ERR_X0_RS1,
     ERR_IMM,
 };
 
@@ -87,13 +86,6 @@ void printError(instruction* i, const enum ErrorType err) {
     case ERR_X0_RD:
         i->type = INVALID;
         fprintf(stderr, "Invalid rd: Register x0 cannot be modified\n");
-        printf("Opcode = %x, ", i->opcode);
-        printf("Funct3 = %x, ", i->funct3);            
-        printf("Funct7 = %x\n", i->funct7);
-        break;
-    case ERR_X0_RS1:
-        i->type = INVALID;
-        fprintf(stderr, "Invalid rs1: Register x0 cannot be modified\n");
         printf("Opcode = %x, ", i->opcode);
         printf("Funct3 = %x, ", i->funct3);            
         printf("Funct7 = %x\n", i->funct7);
@@ -272,13 +264,7 @@ void parseRs1(instruction* i) {
     case ADD:
     case ADDI:
     case LD:
-        // printf("rs1 = %d\n", i->rs1);
-        break;
     case SD:
-        if(i->rs1 == 0x0) {
-            printError(i, ERR_X0_RS1);
-            return;
-        } 
         // printf("rs1 = %d\n", i->rs1);
         break;
     default:

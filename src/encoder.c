@@ -9,7 +9,6 @@ enum ErrorType {
     ERR_REGISTER_OVERFLOW,
     ERR_RD_X0,
     ERR_IMM_LIMIT,
-    ERR_RS1_X0
 };
 
 void printEncodeError(instruction*i, const enum ErrorType err) {
@@ -39,8 +38,6 @@ void printEncodeError(instruction*i, const enum ErrorType err) {
     case ERR_IMM_LIMIT:
         fprintf(stderr, "Immediate is not within limits\n");
         break;
-    case ERR_RS1_X0:
-        fprintf(stderr, "Invalid rs1: x0 cannot be modified\n");
     default:
         break;
     }
@@ -210,10 +207,6 @@ void obtainArguments(instruction* i, const char* s) {
                 i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
                 if (i->rs1 > 31 || i->rs2 > 31) {
                     printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                    return;
-                }
-                if (i->rs1 == 0x0) {
-                    printEncodeError(i, ERR_RS1_X0);
                     return;
                 }
                 if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
