@@ -280,7 +280,6 @@ void obtainOpcode(instruction* i) {
     }
 }
 
-// input
 void obtainInput(instruction* i) {
     if (i == NULL || i->type == INVALID) {
         return;
@@ -318,10 +317,17 @@ void obtainInput(instruction* i) {
     }
 }
 
-void encodeInstructions(instruction* i, const char* s) {
+bool encodeInstruction(const char* s) {
+    instruction* i = malloc(sizeof(instruction));
+    obtainInstruction(i, s);
     obtainArguments(i, s);
     obtainFunct7(i);
     obtainFunct3(i);
     obtainOpcode(i);
+    if (i == NULL) {
+        return false;
+    }
     obtainInput(i);
+    free(i);
+    return true;
 }

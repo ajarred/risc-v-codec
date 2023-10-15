@@ -35,10 +35,7 @@ int main() {
         if (strncmp(input, "0x", 2) == 0) {
             decodeInstruction(input);
         } else if (isValidInstruction(input)) {
-            instruction* risc = malloc(sizeof(instruction));
-            obtainInstruction(risc, input);
-            encodeInstructions(risc, input);
-            free(risc);
+            encodeInstruction(input);
         } else if (strcmp(input, "clear") == 0) {
             system("clear");
         } else if (strcmp(input, "list") == 0) {

@@ -5,18 +5,8 @@
 
 bool isValidInstruction(const char* s);
 
-void obtainInstruction(instruction* i, const char* s);
-
-void obtainArguments(instruction* i, const char* s);
-
-void obtainFunct7(instruction*i);
-
-void obtainFunct3(instruction* i);
-
-void obtainOpcode(instruction* i);
-
 void obtainInput(instruction* i);
 
-void encodeInstructions(instruction* i, const char* s);
+bool encodeInstruction(const char* s);
 
 #endif
