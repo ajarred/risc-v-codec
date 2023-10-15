@@ -25,6 +25,7 @@ void add_history(char* unused) {}
 #endif
 
 void clearScreen();
+void listAvailableInstructions();
 
 int main() {
     printf("RISC-V Instruction Codec v.0.0.1\n"
@@ -41,12 +42,7 @@ int main() {
         } else if (strcmp(input, "clear") == 0) {
             clearScreen();
         } else if (strcmp(input, "list") == 0) {
-            printf("Available instruction formats:\n"
-                "add rd, rs1, rs2\n"
-                "sub rd, rs1, rs2\n"
-                "addi rd, rs1, imm\n"
-                "ld rd, imm (rs1)\n"
-                "sd rs2, imm (rs1)\n");
+            listAvailableInstructions();
         } else if (strcmp(input, "quit") == 0) {
             exit(0);
         } else if (strcmp(input, "help") == 0) {
@@ -71,3 +67,12 @@ void clearScreen() {
     system("clear");
     #endif
 }
+
+void listAvailableInstructions() {
+    printf("Available instruction formats:\n"
+    "add rd, rs1, rs2\n"
+    "sub rd, rs1, rs2\n"
+    "addi rd, rs1, imm\n"
+    "ld rd, imm (rs1)\n"
+    "sd rs2, imm (rs1)\n");
+}           
