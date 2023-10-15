@@ -3,6 +3,10 @@
 
 #ifdef _WIN32
 
+void clearScreen() {
+    system("cls");
+}
+
 static char buffer[2048];
 
 char* readline(char* prompt) {
@@ -18,13 +22,18 @@ void add_history(char* unused) {}
 
 #elif __APPLE__
 #include <editline/readline.h>
+void clearScreen() {
+    system("clear");
+}
 
 #else 
 #include <editline/history.h> // exclude in mac
+void clearScreen() {
+    system("clear");
+}
 
 #endif
 
-void clearScreen();
 void listAvailableInstructions();
 void listAvailableCommands();
 
@@ -54,14 +63,6 @@ int main() {
         free(input);
     }
     return 0;
-}
-
-void clearScreen() {
-    #ifdef _WIN32
-    system("cls");
-    #else
-    system("clear");
-    #endif
 }
 
 void listAvailableInstructions() {
