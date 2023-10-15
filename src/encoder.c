@@ -110,7 +110,6 @@ void obtainArguments(instruction* i, const char* s) {
         // format: add rd, rs1, rs2
         // format: sub rd, rs1, rs2
         if (sscanf(s, "%5s x%3[^,], x%3[^,], x%3s", instr, rd, rs1, rs2) == 4) {
-            // printf("String: instr = %s, rd = %s, rs1 = %s, rs2 = %s\n", instr, rd, rs1, rs2);
             if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(rs2) > 3) {
                 printEncodeError(i, ERR_BUFFER_OVERFLOW);
                 return;
@@ -127,7 +126,6 @@ void obtainArguments(instruction* i, const char* s) {
                 printEncodeError(i, ERR_RD_X0);
                 return;
             }
-            // printf("instr = %s, rd = x%d, rs1 = x%d, rs2 = x%d\n", i->instr, i->rd, i->rs1, i->rs2);
         } else {
             printEncodeError(i, ERR_INSTR_R);
             return;
@@ -137,7 +135,6 @@ void obtainArguments(instruction* i, const char* s) {
         // format: addi rd, rs1, imm
         if (strcmp(i->instr, "addi") == 0) {
             if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rd, rs1, imm) == 4) {
-                // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
                 if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
@@ -157,7 +154,6 @@ void obtainArguments(instruction* i, const char* s) {
                 if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
                     printEncodeError(i, ERR_IMM_LIMIT);
                 }
-                // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 printEncodeError(i, ERR_INSTR_I);
                 return;
@@ -166,7 +162,6 @@ void obtainArguments(instruction* i, const char* s) {
         // format: ld rd, imm (rs1)
         if (strcmp(i->instr, "ld") == 0) {
             if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rd, imm, rs1) == 4) {
-                // printf("String: instr = %s, rd = %s, rs1 = %s, imm = %s\n", instr, rd, rs1, imm);
                 if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
@@ -186,7 +181,6 @@ void obtainArguments(instruction* i, const char* s) {
                 if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
                     printEncodeError(i, ERR_IMM_LIMIT);
                 }
-                // printf("instr = %s, rd = x%d, rs1 = x%d, imm = %d\n", i->instr, i->rd, i->rs1, i->immediate);
             } else {
                 printEncodeError(i, ERR_INSTR_I);
                 return;
@@ -197,7 +191,6 @@ void obtainArguments(instruction* i, const char* s) {
         // format: sd rs2, imm (rs1)
         if (strcmp(i->instr, "sd") == 0) {
             if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rs2, imm, rs1) == 4) {
-                // printf("String: instr = %s, rs2 = %s, imm = %s, rs1 = %s\n", instr, rs2, imm, rs1);
                 if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
@@ -212,7 +205,6 @@ void obtainArguments(instruction* i, const char* s) {
                 if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
                     printEncodeError(i, ERR_IMM_LIMIT);
                 }
-                // printf("instr = %s, rs2 = x%d, imm = %d, rs1 = x%d\n", i->instr, i->rs2, i->immediate, i->rs1);
             } else {
                 printEncodeError(i, ERR_INSTR_S);
                 return;
@@ -232,11 +224,9 @@ void obtainFunct7(instruction* i) {
     case R:
         if (strcmp(i->instr, "add") == 0) {
             i->funct7 = 0x0;
-            // printf("funct7 = %x\n", i->funct7);
         }
         if (strcmp(i->instr, "sub") == 0) {
             i->funct7 = 0x20;
-            // printf("funct7 = %x\n", i->funct7);
         } 
         break;
     case I:
@@ -254,12 +244,10 @@ void obtainFunct3(instruction* i) {
         (strcmp(i->instr, "sub") == 0) ||
         (strcmp(i->instr, "addi")== 0)) {
             i->funct3 = 0x0;
-            // printf("funct3 = %x\n", i->funct3);
         } 
     if ((strcmp(i->instr, "ld") == 0) ||
         (strcmp(i->instr, "sd") == 0)) {
             i->funct3 = 0x3;
-            // printf("funct3 = %x\n", i->funct3);
         } 
 }
 
@@ -273,7 +261,6 @@ void obtainOpcode(instruction* i) {
         (strcmp(i->instr, "sub") == 0)) {
             i->opcode = 0x33;
         }
-        // printf("opcode = %x\n", i->opcode);
         break;
     case I:
         if (strcmp(i->instr, "addi") == 0) {
@@ -282,13 +269,11 @@ void obtainOpcode(instruction* i) {
         if (strcmp(i->instr, "ld") == 0) {
             i->opcode = 0x3;
         }
-        // printf("opcode = %x\n", i->opcode);
         break;
     case S:
         if (strcmp(i->instr, "sd") == 0) {
             i->opcode = 0x23;
         }
-        // printf("opcode = %x\n", i->opcode);
         break;
     default:
         break;

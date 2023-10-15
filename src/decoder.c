@@ -40,7 +40,6 @@ bool convertStrToUint(char* str, unsigned int *n) {
         return false;
     }
     *n = (unsigned int)strtol(str, NULL, 16);
-    // printf("%x\n", *n);
     return true;
 }
 
@@ -110,7 +109,6 @@ void parseOpcode(instruction* i) {
     }
     unsigned int mask = MASK_7BITS; 
     i->opcode = (enum Opcode)(i->input & mask); // convert uint to enum type
-    // printf("%x\n", i->opcode);
 
     switch (i->opcode) {
     case ADD:
@@ -143,34 +141,27 @@ void parseFunct3(instruction* i) {
             printError(i, ERR_FUNCT3);
             return;
         }
-        // printf("funct3 = %x\n", i->funct3);
         break;
     case ADDI:
         if (i->funct3 != 0x0) {
             printError(i, ERR_FUNCT3);
             return;
         }
-        // printf("funct3 = %x\n", i->funct3);
         strcpy(i->instr, "addi");
-        // printf("instr = %s\n", i->instr);
         break;
     case LD:
         if (i->funct3 != 0x3) {
             printError(i, ERR_FUNCT3);
             return;
         }
-        // printf("funct3 = %x\n", i->funct3);
         strcpy(i->instr, "ld");
-        // printf("instr = %s\n", i->instr);
         break;
     case SD:
         if (i->funct3 != 0x3) {
             printError(i, ERR_FUNCT3);
             return;
         }
-        // printf("funct3 = %x\n", i->funct3);
         strcpy(i->instr, "sd");
-        // printf("instr = %s\n", i->instr);
         break;
     default:
         break;
@@ -192,15 +183,12 @@ void parseFunct7(instruction* i) {
             printError(i, ERR_FUNCT7);
             return;
         }
-        // printf("funct7 = %x\n", i->funct7);
         switch (i->funct7) {
         case 0x0:
             strcpy(i->instr, "add");
-            // printf("instr = %s\n", i->instr);
             break;
         case 0x20:
             strcpy(i->instr, "sub");
-            // printf("instr = %s\n", i->instr);
             break;
         default:
             break;
@@ -210,7 +198,6 @@ void parseFunct7(instruction* i) {
     case LD:
     case SD:
         i->immediate = (funct7 << IMM_UPPER);
-        // printf("immediate (upper) = %d\n", i->immediate);
         break;
     default:
         break;
@@ -234,11 +221,8 @@ void parseRd(instruction* i) {
             printError(i, ERR_X0_RD);
             return;
         } 
-        // printf("rd = %x\n", rd);
         break;
     case SD:
-        // printf("immediate (lower) = %d\n", rd);
-        // printf("immediate (upper) = %d\n", i->immediate);
         signedCheck = ((i->immediate) | rd) << SIGN_EXTENDED_SHIFT;
         signedCheck >>= SIGN_EXTENDED_SHIFT;  
         i->immediate = signedCheck;
@@ -246,7 +230,6 @@ void parseRd(instruction* i) {
             printError(i, ERR_IMM);
             return;
         }
-        // printf("immediate (total) = %d\n", i->immediate);
         break;
     default:
         break;
@@ -265,7 +248,6 @@ void parseRs1(instruction* i) {
     case ADDI:
     case LD:
     case SD:
-        // printf("rs1 = %d\n", i->rs1);
         break;
     default:
         break;
@@ -285,12 +267,9 @@ void parseRs2(instruction* i)
     case ADD:
     case SD:
         i->rs2 = rs2;
-        // printf("rs2 = %d\n", i->rs2);
         break;
     case ADDI:
     case LD:
-        // printf("immediate (lower) = %d\n", rs2);
-        // printf("immediate (upper) = %d\n", i->immediate);
         signedCheck = ((i->immediate) | rs2) << SIGN_EXTENDED_SHIFT;
         signedCheck >>= SIGN_EXTENDED_SHIFT; 
         i->immediate = signedCheck;
@@ -298,7 +277,6 @@ void parseRs2(instruction* i)
                 printError(i, ERR_IMM);
                 return;
         }
-        // printf("immediate (total) = %d\n", i->immediate);
         break;
     default:
         break;
