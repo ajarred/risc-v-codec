@@ -8,7 +8,7 @@ enum ErrorType {
 };
 
 enum Opcode {
-    ADD = 0x33u, 
+    R_TYPE = 0x33u, 
     ADDI = 0x13u,
     LD = 0x3u,
     SD = 0x23u
@@ -52,7 +52,7 @@ void printError(instruction* i, const enum ErrorType err) {
     case ERR_FUNCT3:
         i->type = INVALID;
         switch(i->opcode) {
-        case ADD:
+        case R_TYPE:
         case ADDI:
             fprintf(stderr, "Invalid funct3. Funct3 must be 0x0\n");
             printf("Opcode = %x, ", i->opcode);
@@ -70,7 +70,7 @@ void printError(instruction* i, const enum ErrorType err) {
         break;
     case ERR_FUNCT7:
         switch(i->opcode) {
-        case ADD:
+        case R_TYPE:
             i->type = INVALID;
             fprintf(stderr, "Invalid funct7. Funct7 must be either 0x0 or 0x20\n");
             printf("Opcode = %x, ", i->opcode);
@@ -102,7 +102,7 @@ void parseOpcode(instruction* i) {
     i->opcode = (enum Opcode)(i->input & mask); 
 
     switch (i->opcode) {
-    case ADD:
+    case R_TYPE:
         i->type = R;
         break;
     case LD:
@@ -127,7 +127,7 @@ void parseFunct3(instruction* i) {
     unsigned int mask = MASK_3BITS << BIT_FUNCT3; 
     i->funct3 = (mask & i->input) >> BIT_FUNCT3;
     switch(i->opcode) {
-    case ADD:
+    case R_TYPE:
         if (i->funct3 != 0x0) {
             printError(i, ERR_FUNCT3);
             return;
@@ -167,7 +167,7 @@ void parseFunct7(instruction* i) {
     unsigned int mask = MASK_7BITS << BIT_FUNCT7; 
     unsigned int funct7 = (mask & i->input) >> BIT_FUNCT7;
     switch (i->opcode) {
-    case ADD:
+    case R_TYPE:
         i->funct7 = funct7;
         if (i->funct7 != 0x0 && funct7 != 0x20)
         {
@@ -207,7 +207,7 @@ void parseRd(instruction* i) {
     unsigned int rd = (mask & i->input) >> BIT_RD;
     int signedCheck;
     switch (i->opcode) {
-    case ADD:
+    case R_TYPE:
     case ADDI:     
     case LD:
         i->rd = rd;
@@ -233,7 +233,7 @@ void parseRs1(instruction* i) {
     unsigned int mask = MASK_5BITS << BIT_RS1;
     i->rs1 = (mask & i->input) >> BIT_RS1;
     switch (i->opcode) {
-    case ADD:
+    case R_TYPE:
     case ADDI:
     case LD:
     case SD:
@@ -253,7 +253,7 @@ void parseRs2(instruction* i)
     unsigned int rs2 = (mask & i->input) >> BIT_RS2;
     int signedCheck;
     switch (i->opcode) {
-    case ADD:
+    case R_TYPE:
     case SD:
         i->rs2 = rs2;
         break;
