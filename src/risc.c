@@ -55,7 +55,8 @@ int main() {
             listAvailableInstructions();
         } else if (strcmp(input, "help") == 0) {
             listAvailableCommands();
-        } else if (strcmp(input, "quit") == 0) {
+        } else if (strcmp(input, "quit") == 0 ||
+                   strcmp(input, "exit") == 0) {
             break;
         } else {
             fprintf(stderr, "Invalid input.\n");
