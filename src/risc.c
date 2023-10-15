@@ -26,6 +26,7 @@ void add_history(char* unused) {}
 
 void clearScreen();
 void listAvailableInstructions();
+void listAvailableCommands();
 
 int main() {
     printf("RISC-V Instruction Codec v.0.0.1\n"
@@ -43,15 +44,10 @@ int main() {
             clearScreen();
         } else if (strcmp(input, "list") == 0) {
             listAvailableInstructions();
+        } else if (strcmp(input, "help") == 0) {
+            listAvailableCommands();
         } else if (strcmp(input, "quit") == 0) {
             break;
-        } else if (strcmp(input, "help") == 0) {
-            printf("Available commands:\n"
-                "hex number (e.g., 0x3100B3) = converts to assembly instruction\n"
-                "assembly instruction (e.g., add x1, x2, x3) = converts to hex number\n"
-                "clear = clears the screen\n"
-                "list = lists all available assembly instruction formats\n"
-                "quit = exits the program\n");
         } else {
             fprintf(stderr, "Invalid input.\n");
         }
@@ -75,4 +71,13 @@ void listAvailableInstructions() {
     "addi rd, rs1, imm\n"
     "ld rd, imm (rs1)\n"
     "sd rs2, imm (rs1)\n");
-}           
+}          
+
+void listAvailableCommands() {
+    printf("Available commands:\n"
+    "hex number (e.g., 0x3100B3) = converts to assembly instruction\n"
+    "assembly instruction (e.g., add x1, x2, x3) = converts to hex number\n"
+    "clear = clears the screen\n"
+    "list = lists all available assembly instruction formats\n"
+    "quit = exits the program\n");
+}
