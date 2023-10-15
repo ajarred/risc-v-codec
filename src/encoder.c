@@ -113,6 +113,9 @@ void obtainArguments(instruction* i, const char* s) {
             }
             i->assemblyStr = (char*) malloc(strlen(s)+1);
             strncpy(i->assemblyStr, s, strlen(s)+1);
+            if (i->assemblyStr == NULL) {
+                return;
+            }
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
@@ -139,6 +142,9 @@ void obtainArguments(instruction* i, const char* s) {
                     return;
                 }
                 i->assemblyStr = (char*) malloc(strlen(s)+1);
+                if (i->assemblyStr == NULL) {
+                    return;
+                }
                 strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
@@ -165,11 +171,13 @@ void obtainArguments(instruction* i, const char* s) {
                     return;
                 }
                 i->assemblyStr = (char*) malloc(strlen(s)+1);
+                if (i->assemblyStr == NULL) {
+                    return;
+                }
                 strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
-
                 if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
                     printEncodeError(i, ERR_REGISTER_OVERFLOW);
                     return;
@@ -193,6 +201,9 @@ void obtainArguments(instruction* i, const char* s) {
                     return;
                 }
                 i->assemblyStr = (char*) malloc(strlen(s)+1);
+                if (i->assemblyStr == NULL) {
+                    return;
+                }
                 strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
                 i->immediate = (int)strtoul(imm, NULL, 10);

@@ -339,6 +339,9 @@ void getAssemblyString(instruction* i) {
 }
 
 void printdecodedAssembly(instruction* i) {
+    if (i->assemblyStr == NULL) {
+        return;
+    }
     printf("%s\n", i->assemblyStr);
 }
 
@@ -372,3 +375,4 @@ bool decodeInstruction(char* input) {
     }
     return false;
 }
+
