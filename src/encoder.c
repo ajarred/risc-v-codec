@@ -8,7 +8,6 @@ enum ErrorType {
     ERR_INSTR_S,
     ERR_REGISTER_OVERFLOW,
     ERR_RD_X0,
-    ERR_IMM_LIMIT,
 };
 
 void printEncodeError(instruction*i, const enum ErrorType err) {
@@ -34,9 +33,6 @@ void printEncodeError(instruction*i, const enum ErrorType err) {
         break;
     case ERR_RD_X0:
         fprintf(stderr, "Invalid rd: x0 cannot be modified\n");
-        break;
-    case ERR_IMM_LIMIT:
-        fprintf(stderr, "Immediate is not within limits\n");
         break;
     default:
         break;
@@ -151,9 +147,6 @@ void obtainArguments(instruction* i, const char* s) {
                     printEncodeError(i, ERR_RD_X0);
                     return;
                 }
-                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
-                    printEncodeError(i, ERR_IMM_LIMIT);
-                }
             } else {
                 printEncodeError(i, ERR_INSTR_I);
                 return;
@@ -178,9 +171,6 @@ void obtainArguments(instruction* i, const char* s) {
                     printEncodeError(i, ERR_RD_X0);
                     return;
                 }
-                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
-                    printEncodeError(i, ERR_IMM_LIMIT);
-                }
             } else {
                 printEncodeError(i, ERR_INSTR_I);
                 return;
@@ -201,9 +191,6 @@ void obtainArguments(instruction* i, const char* s) {
                 if (i->rs1 > 31 || i->rs2 > 31) {
                     printEncodeError(i, ERR_REGISTER_OVERFLOW);
                     return;
-                }
-                if (i->immediate > MAX_SIGNED_BIT || i->immediate < MIN_SIGNED_BIT) {
-                    printEncodeError(i, ERR_IMM_LIMIT);
                 }
             } else {
                 printEncodeError(i, ERR_INSTR_S);

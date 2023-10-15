@@ -5,7 +5,6 @@ enum ErrorType {
     ERR_FUNCT3,
     ERR_FUNCT7,
     ERR_X0_RD,
-    ERR_IMM,
 };
 
 enum Opcode {
@@ -89,14 +88,6 @@ void printError(instruction* i, const enum ErrorType err) {
         printf("Funct3 = %x, ", i->funct3);            
         printf("Funct7 = %x\n", i->funct7);
         break;
-    case ERR_IMM:
-        i->type = INVALID;
-        fprintf(stderr, "Immediate value is out of range\n");
-        printf("Opcode = %x, ", i->opcode);
-        printf("Funct3 = %x, ", i->funct3);            
-        printf("Funct7 = %x, ", i->funct7);
-        printf("Immediate = %x\n", i->immediate);
-        break;
     default:
         break;
     }
@@ -108,7 +99,7 @@ void parseOpcode(instruction* i) {
         return;
     }
     unsigned int mask = MASK_7BITS; 
-    i->opcode = (enum Opcode)(i->input & mask); // convert uint to enum type
+    i->opcode = (enum Opcode)(i->input & mask); 
 
     switch (i->opcode) {
     case ADD:
@@ -204,6 +195,9 @@ void parseFunct7(instruction* i) {
     }
 }
 
+// sign extend value v with the most significant bit sb
+#define SIGNEX(v, sb) ((v) | (((v) & (1 << (sb))) ? ~((1 << (sb))-1) : 0))
+
 // parse bits 7-11
 void parseRd(instruction* i) {
     if (i->type == INVALID) {
@@ -223,13 +217,8 @@ void parseRd(instruction* i) {
         } 
         break;
     case SD:
-        signedCheck = ((i->immediate) | rd) << SIGN_EXTENDED_SHIFT;
-        signedCheck >>= SIGN_EXTENDED_SHIFT;  
-        i->immediate = signedCheck;
-        if (i->immediate < MIN_SIGNED_BIT || i->immediate > MAX_SIGNED_BIT) {
-            printError(i, ERR_IMM);
-            return;
-        }
+        signedCheck = ((i->immediate) | rd);
+        i->immediate = SIGNEX(signedCheck, IMM12_MSB);
         break;
     default:
         break;
@@ -270,13 +259,8 @@ void parseRs2(instruction* i)
         break;
     case ADDI:
     case LD:
-        signedCheck = ((i->immediate) | rs2) << SIGN_EXTENDED_SHIFT;
-        signedCheck >>= SIGN_EXTENDED_SHIFT; 
-        i->immediate = signedCheck;
-        if (signedCheck < MIN_SIGNED_BIT || signedCheck > MAX_SIGNED_BIT) {
-                printError(i, ERR_IMM);
-                return;
-        }
+        signedCheck = ((i->immediate) | rs2);
+        i->immediate = SIGNEX(signedCheck, IMM12_MSB);
         break;
     default:
         break;

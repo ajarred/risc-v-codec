@@ -7,10 +7,6 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-// 12-bit immediate value limits
-#define MIN_SIGNED_BIT -2048
-#define MAX_SIGNED_BIT 2047
-
 enum Format { 
     INVALID,
     R, 
@@ -33,10 +29,10 @@ enum MaskValues {
     MASK_7BITS = 0x7f 
 };
 
-enum Imm {
+enum Imm12 {
     IMM_LOWER, 
     IMM_UPPER = 5, 
-    SIGN_EXTENDED_SHIFT = 20 
+    IMM12_MSB = 11
 };
 
 typedef struct instruction {
