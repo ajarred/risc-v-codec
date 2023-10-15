@@ -315,12 +315,31 @@ void printInstructions(instruction* i) {
     }
 }
 
-void decodeInstruction(instruction* i) {
+instruction* createInstruction(unsigned int hex) {
+    instruction* i = malloc(sizeof(instruction));
+    i->input = hex;
     parseOpcode(i); 
     parseFunct3(i);
     parseFunct7(i);
     parseRd(i);
     parseRs1(i);
     parseRs2(i);
-    printInstructions(i);
+    if (i->type == INVALID) {
+        return NULL;
+    }
+    return i;
+}
+
+bool decodeInstruction(char* input) {
+    unsigned int n = 0;
+    if (convertStrToUint(input, &n)) {
+        instruction* i = createInstruction(n);
+        if (i == NULL) {
+            return false;
+        }
+        printInstructions(i);
+        free(i);
+        return true;
+    }
+    return false;
 }

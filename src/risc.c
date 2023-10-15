@@ -33,13 +33,7 @@ int main() {
         add_history(input);
 
         if (strncmp(input, "0x", 2) == 0) {
-            unsigned int n;
-            if (convertStrToUint(input, &n)) {
-                instruction* risc = malloc(sizeof(instruction));
-                risc->input = n;
-                decodeInstruction(risc);
-                free(risc); 
-            }
+            decodeInstruction(input);
         } else if (isValidInstruction(input)) {
             instruction* risc = malloc(sizeof(instruction));
             obtainInstruction(risc, input);
