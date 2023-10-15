@@ -96,6 +96,7 @@ void obtainArguments(instruction* i, const char* s) {
     if (s == NULL || strlen(s) == 0) {
         return;
     }
+    i->assemblyStr = NULL;
     char instr[6] = "";
     char rs1[4] = "";
     char rs2[4] = "";
@@ -110,6 +111,8 @@ void obtainArguments(instruction* i, const char* s) {
                 printEncodeError(i, ERR_BUFFER_OVERFLOW);
                 return;
             }
+            i->assemblyStr = (char*) malloc(strlen(s)+1);
+            strncpy(i->assemblyStr, s, strlen(s)+1);
             i->rd = (unsigned int)strtoul(rd, NULL, 10);
             i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
             i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
@@ -135,6 +138,8 @@ void obtainArguments(instruction* i, const char* s) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
                 }
+                i->assemblyStr = (char*) malloc(strlen(s)+1);
+                strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
@@ -159,6 +164,8 @@ void obtainArguments(instruction* i, const char* s) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
                 }
+                i->assemblyStr = (char*) malloc(strlen(s)+1);
+                strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rd = (unsigned int)strtoul(rd, NULL, 10);
                 i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
                 i->immediate = (int)strtol(imm, NULL, 10);
@@ -185,6 +192,8 @@ void obtainArguments(instruction* i, const char* s) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
                 }
+                i->assemblyStr = (char*) malloc(strlen(s)+1);
+                strncpy(i->assemblyStr, s, strlen(s)+1);
                 i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
                 i->immediate = (int)strtoul(imm, NULL, 10);
                 i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
@@ -315,6 +324,7 @@ bool encodeInstruction(const char* s) {
         return false;
     }
     obtainInput(i);
+    free(i->assemblyStr);
     free(i);
     return true;
 }

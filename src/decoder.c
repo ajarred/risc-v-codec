@@ -299,6 +299,49 @@ void printInstructions(instruction* i) {
     }
 }
 
+void getAssemblyString(instruction* i) {
+    if (i->type == INVALID) {
+        return;
+    }
+    char tempString[32];
+
+    switch (i->type) {
+    case R:
+        snprintf(tempString, sizeof(tempString), "%s x%d, x%d, x%d", 
+                                    i->instr, i->rd, i->rs1, i->rs2);
+        break;
+    case I:
+        switch (i->opcode) {
+        case ADDI:
+            snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d", 
+                                 i->instr, i->rd, i->rs1, i->immediate);
+            break;
+        case LD:
+            snprintf(tempString, sizeof(tempString), "%s x%d, %d (x%d)", 
+                                  i->instr, i->rd, i->immediate, i->rs1);
+            break;
+        default:
+            break;
+        }
+        break;
+    case S:
+        snprintf(tempString, sizeof(tempString), "%s x%d, %d (x%d)", 
+                             i->instr, i->rs2, i->immediate, i->rs1);
+        break;
+    default:
+        break;
+    }
+    i->assemblyStr = (char*)malloc(strlen(tempString) + 1);
+    if (i->assemblyStr == NULL) {
+        return;
+    }
+    strcpy(i->assemblyStr, tempString);
+}
+
+void printdecodedAssembly(instruction* i) {
+    printf("%s\n", i->assemblyStr);
+}
+
 instruction* createInstruction(unsigned int hex) {
     instruction* i = malloc(sizeof(instruction));
     i->input = hex;
@@ -308,6 +351,7 @@ instruction* createInstruction(unsigned int hex) {
     parseRd(i);
     parseRs1(i);
     parseRs2(i);
+    getAssemblyString(i);
     if (i->type == INVALID) {
         return NULL;
     }
@@ -321,7 +365,8 @@ bool decodeInstruction(char* input) {
         if (i == NULL) {
             return false;
         }
-        printInstructions(i);
+        printdecodedAssembly(i);
+        free(i->assemblyStr);
         free(i);
         return true;
     }

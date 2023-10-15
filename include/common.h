@@ -45,7 +45,8 @@ typedef struct instruction {
     unsigned int rs2;
     unsigned int funct7;
     int immediate;
-    char instr[5]; 
+    char instr[6]; 
+    char* assemblyStr;
 } instruction;
 
 #endif 
