@@ -24,6 +24,8 @@ void add_history(char* unused) {}
 
 #endif
 
+void clearScreen();
+
 int main() {
     printf("RISC-V Instruction Codec v.0.0.1\n"
         "Input hex or assembly instructions\n"
@@ -37,7 +39,7 @@ int main() {
         } else if (isValidInstruction(input)) {
             encodeInstruction(input);
         } else if (strcmp(input, "clear") == 0) {
-            system("clear");
+            clearScreen();
         } else if (strcmp(input, "list") == 0) {
             printf("Available instruction formats:\n"
                 "add rd, rs1, rs2\n"
@@ -60,4 +62,12 @@ int main() {
         free(input);
     }
     return 0;
+}
+
+void clearScreen() {
+    #ifdef _WIN32
+    system("cls");
+    #else
+    system("clear");
+    #endif
 }
