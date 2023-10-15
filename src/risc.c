@@ -44,7 +44,7 @@ int main() {
         } else if (strcmp(input, "list") == 0) {
             listAvailableInstructions();
         } else if (strcmp(input, "quit") == 0) {
-            exit(0);
+            break;
         } else if (strcmp(input, "help") == 0) {
             printf("Available commands:\n"
                 "hex number (e.g., 0x3100B3) = converts to assembly instruction\n"
