@@ -57,6 +57,7 @@ int main() {
             listAvailableCommands();
         } else if (strcmp(input, "quit") == 0 ||
                    strcmp(input, "exit") == 0) {
+            free(input);
             break;
         } else {
             fprintf(stderr, "Invalid input.\n");
