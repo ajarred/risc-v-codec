@@ -1,5 +1,5 @@
 # risc-v-codec
-This is a janky CLI implementation of a RISC-V Instruction Codec (Decoder/Encoder). The program can read hex numbers and outputs the corresponding assembly instruction, and vice versa.
+This is a CLI implementation of a RISC-V Instruction Codec (Decoder/Encoder). The program can read hex numbers and outputs the corresponding assembly instruction, and vice versa.
 
 ## Usage
 Clone the repository or download the source code.
