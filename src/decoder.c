@@ -11,7 +11,8 @@ enum Opcode {
     R_TYPE = 0x33u, 
     I_TYPE_IMM = 0x13u,
     I_TYPE_LOAD = 0x3u,
-    S_TYPE = 0x23u
+    S_TYPE = 0x23u,
+    B_TYPE = 0x63u
 };
 
 bool isHex(char* str) {
@@ -112,6 +113,9 @@ void parseOpcode(instruction* i) {
     case S_TYPE:
         i->type = S;
         break;
+    case B_TYPE:
+        i->type = B;
+        break;
     default:
         i->type = INVALID;
         printDecodeError(i, ERR_OPCODE);
@@ -163,6 +167,16 @@ void parseFunct3(instruction* i) {
                 return;
         }
         break;
+    case B_TYPE:
+        switch(i->funct3) {
+            case 0x0:
+                strcpy(i->instr, "beq");
+                break;
+            default:
+                printDecodeError(i, ERR_FUNCT3);
+                break;
+        }
+        break;
     default:
         break;
     }
@@ -199,6 +213,9 @@ void parseFunct7(instruction* i) {
     case S_TYPE:
         i->immediate = (funct7 << IMM_UPPER);
         break;
+    case B_TYPE:
+        i->immediate = funct7;
+        break;
     default:
         break;
     }
@@ -214,7 +231,7 @@ void parseRd(instruction* i) {
     }
     unsigned int mask = MASK_5BITS << BIT_RD;
     unsigned int rd = (mask & i->input) >> BIT_RD;
-    int signedCheck;
+    int temp;
     switch (i->opcode) {
     case R_TYPE:
     case I_TYPE_IMM:     
@@ -226,8 +243,15 @@ void parseRd(instruction* i) {
         } 
         break;
     case S_TYPE:
-        signedCheck = ((i->immediate) | rd);
-        i->immediate = SIGNEX(signedCheck, IMM12_MSB);
+        temp = ((i->immediate) | rd);
+        i->immediate = SIGNEX(temp, IMM12_MSB);
+        break;
+    case B_TYPE:
+        temp = (((i->immediate >> 6) & MASK_1BIT) << 12) |
+               (((rd >> 4) & MASK_1BIT) << 11) |
+               ((i->immediate & MASK_6BITS) << 5) | 
+               (((rd >> 1) & MASK_4BITS) << 1); 
+        i->immediate = SIGNEX(temp, IMM13_MSB);
         break;
     default:
         break;
@@ -246,6 +270,7 @@ void parseRs1(instruction* i) {
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
     case S_TYPE:
+    case B_TYPE:
         break;
     default:
         break;
@@ -264,6 +289,7 @@ void parseRs2(instruction* i)
     switch (i->opcode) {
     case R_TYPE:
     case S_TYPE:
+    case B_TYPE:
         i->rs2 = rs2;
         break;
     case I_TYPE_IMM:
@@ -276,6 +302,7 @@ void parseRs2(instruction* i)
     }
 }
 
+/*
 void printInstructions(instruction* i) {
     if (i->type == INVALID) {
         return;
@@ -307,6 +334,7 @@ void printInstructions(instruction* i) {
         break;
     }
 }
+*/
 
 void getAssemblyString(instruction* i) {
     if (i->type == INVALID) {
@@ -336,6 +364,10 @@ void getAssemblyString(instruction* i) {
     case S:
         snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
                              i->instr, i->rs2, i->immediate, i->rs1);
+        break;
+    case B:
+        snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d",
+                           i->instr, i->rs1, i->rs2, i->immediate);
         break;
     default:
         break;
