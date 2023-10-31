@@ -7,14 +7,6 @@ enum ErrorType {
     ERR_X0_RD,
 };
 
-enum Opcode {
-    R_TYPE = 0x33u, 
-    I_TYPE_IMM = 0x13u,
-    I_TYPE_LOAD = 0x3u,
-    S_TYPE = 0x23u,
-    B_TYPE = 0x63u
-};
-
 bool isHex(char* str) {
     size_t length = strlen(str);
     if (length > 0 && str[length - 1] == '\n') {
