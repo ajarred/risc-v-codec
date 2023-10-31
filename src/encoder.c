@@ -55,6 +55,13 @@ bool isValidInstruction(const char* s) {
     if (strncmp(s, "add", 3) == 0 ||
         strncmp(s, "sub", 3) == 0 ||
         strncmp(s, "xor", 3) == 0 ||
+        strncmp(s, "or",  2) == 0 ||
+        strncmp(s, "and", 3) == 0 ||
+        strncmp(s, "sll", 3) == 0 ||
+        strncmp(s, "srl", 3) == 0 ||
+        strncmp(s, "sra", 3) == 0 ||
+        strncmp(s, "slt", 3) == 0 ||
+        strncmp(s, "sltu",4) == 0 ||
         strncmp(s, "addi",4) == 0 ||
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
@@ -73,6 +80,10 @@ void obtainInstruction(instruction* i, const char* s) {
         strcpy(i->instr, "addi");
         i->opcode = I_TYPE_IMM;
         return;
+    } else if (strncmp(s, "sltu", 4) == 0) {
+        strcpy(i->instr, "sltu");
+        i->opcode = R_TYPE;
+        return;
     } else if (strncmp(s, "add", 3) == 0) {
         strcpy(i->instr, "add");
         i->opcode = R_TYPE; 
@@ -83,6 +94,30 @@ void obtainInstruction(instruction* i, const char* s) {
         return;
     } else if (strncmp(s, "xor", 3) == 0) {
         strcpy(i->instr, "xor");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "or", 2) == 0) {
+        strcpy(i->instr, "or");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "and", 3) == 0) {
+        strcpy(i->instr, "and");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "sll", 3) == 0) {
+        strcpy(i->instr, "sll");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "srl", 3) == 0) {
+        strcpy(i->instr, "srl");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "sra", 3) == 0) {
+        strcpy(i->instr, "sra");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "slt", 3) == 0) {
+        strcpy(i->instr, "slt");
         i->opcode = R_TYPE;
         return;
     } else if (strncmp(s, "ld",  2) == 0) {
@@ -270,10 +305,17 @@ void obtainFunct7(instruction* i) {
     switch(i->opcode) {
     case R_TYPE:
         if (strncmp(i->instr, "add", 3) == 0 ||
-            strncmp(i->instr, "xor", 2) == 0) {
+            strncmp(i->instr, "xor", 3) == 0 ||
+            strncmp(i->instr, "or",  2) == 0 ||
+            strncmp(i->instr, "and", 3) == 0 ||
+            strncmp(i->instr, "sll", 3) == 0 ||
+            strncmp(i->instr, "srl", 3) == 0 ||
+            strncmp(i->instr, "slt", 3) == 0 ||
+            strncmp(i->instr, "sltu",4) == 0) {
             i->funct7 = 0x0;
         }
-        if (strncmp(i->instr, "sub", 3) == 0) {
+        if (strncmp(i->instr, "sub", 3) == 0 || 
+            strncmp(i->instr, "sra", 3) == 0) {
             i->funct7 = 0x20;
         } 
         break;
@@ -292,7 +334,7 @@ void obtainFunct3(instruction* i) {
     }
     if ((strncmp(i->instr, "add", 3) == 0) || 
         (strncmp(i->instr, "sub", 3) == 0) ||
-        (strncmp(i->instr, "addi",4)== 0) ||
+        (strncmp(i->instr, "addi",4) == 0) ||
         (strncmp(i->instr, "beq", 3) == 0)) {
         i->funct3 = 0x0;
     } else if ((strncmp(i->instr, "ld", 2) == 0) ||
@@ -300,7 +342,20 @@ void obtainFunct3(instruction* i) {
         i->funct3 = 0x3;
     } else if (strncmp(i->instr, "xor", 3) == 0) {
         i->funct3 = 0x4;
-    }
+    } else if (strncmp(i->instr, "or", 2) == 0) {
+        i->funct3 = 0x6;
+    } else if (strncmp(i->instr, "and", 3) == 0) {
+        i->funct3 = 0x7;
+    } else if (strncmp(i->instr, "sll", 3) == 0) {
+        i->funct3 = 0x1;
+    } else if ((strncmp(i->instr, "srl", 3) == 0) ||
+               (strncmp(i->instr, "sra", 3) == 0)) {
+        i->funct3 = 0x5;
+    } else if (strncmp(i->instr, "sltu", 4) == 0) {
+        i->funct3 = 0x3;
+    } else if (strncmp(i->instr, "slt", 3) == 0) {
+        i->funct3 = 0x2;
+    } 
 }
 
 void obtainOpcode(instruction* i) {
@@ -311,7 +366,14 @@ void obtainOpcode(instruction* i) {
     case R_TYPE:
         if ((strncmp(i->instr, "add", 3) == 0) || 
         (strncmp(i->instr, "sub", 3) == 0) ||
-        (strncmp(i->instr, "xor", 3) == 0)) {
+        (strncmp(i->instr, "xor", 3) == 0) ||
+        (strncmp(i->instr, "or", 2)  == 0) ||
+        (strncmp(i->instr, "and", 3) == 0) ||
+        (strncmp(i->instr, "sll", 3) == 0) ||
+        (strncmp(i->instr, "srl", 3) == 0) ||
+        (strncmp(i->instr, "sra", 3) == 0) ||
+        (strncmp(i->instr, "slt", 3) == 0) ||
+        (strncmp(i->instr, "sltu", 3) == 0)) {
             i->opcode = R_TYPE;
         }
         break;

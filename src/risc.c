@@ -203,7 +203,77 @@ void runUnitTest() {
     test = createEncodedInstruction("xor x1, x15, x30");
     assert(test->input == 0x01e7c0b3);
     free(test->assemblyStr);
-    free(test);   
+    free(test);  
+
+    test = createDecodedInstruction(0x01e7e0b3);
+    assert(strcmp(test->assemblyStr, "or x1, x15, x30") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("or x1, x15, x30");
+    assert(test->input == 0x01e7e0b3);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x01e7f0b3);
+    assert(strcmp(test->assemblyStr, "and x1, x15, x30") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("and x1, x15, x30");
+    assert(test->input == 0x01e7f0b3);
+    free(test->assemblyStr);
+    free(test);  
+
+    test = createDecodedInstruction(0x01ff1eb3);
+    assert(strcmp(test->assemblyStr, "sll x29, x30, x31") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sll x29, x30, x31");
+    assert(test->input == 0x01ff1eb3);
+    free(test->assemblyStr);
+    free(test);  
+
+    test = createDecodedInstruction(0x01ff5eb3);
+    assert(strcmp(test->assemblyStr, "srl x29, x30, x31") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("srl x29, x30, x31");
+    assert(test->input == 0x01ff5eb3);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x40ff50b3);
+    assert(strcmp(test->assemblyStr, "sra x1, x30, x15") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sra x1, x30, x15");
+    assert(test->input == 0x40ff50b3);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x0138a1b3);
+    assert(strcmp(test->assemblyStr, "slt x3, x17, x19") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("slt x3, x17, x19");
+    assert(test->input == 0x0138a1b3);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x00a43333);
+    assert(strcmp(test->assemblyStr, "sltu x6, x8, x10") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sltu x6, x8, x10");
+    assert(test->input == 0x00a43333);
+    free(test->assemblyStr);
+    free(test);
 
     printf("\nPassed all tests\n");
 }

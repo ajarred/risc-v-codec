@@ -97,7 +97,13 @@ void parseFunct3(instruction* i) {
     case R_TYPE:
         switch(i->funct3) {
             case 0x0:
+            case 0x1:
+            case 0x2:
+            case 0x3:
             case 0x4:
+            case 0x5:
+            case 0x6:
+            case 0x7:
                 break;
             default:
                 printDecodeError(i, ERR_FUNCT3);
@@ -158,6 +164,10 @@ void parseFunct7(instruction* i) {
     unsigned int funct7 = (mask & i->input) >> BIT_FUNCT7;
     switch (i->opcode) {
     case R_TYPE:
+        if (funct7 != 0x0 && funct7 != 0x20) {
+            printDecodeError(i, ERR_FUNCT7);
+            return;
+        }
         i->funct7 = funct7;
         switch (i->funct3) {
         case 0x0:
@@ -173,13 +183,61 @@ void parseFunct7(instruction* i) {
                 return;
             }
             break;
+        case 0x1:
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "sll");
+            break;  
+        case 0x2:
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "slt");
+            break;     
+        case 0x3:
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "sltu");
+            break;                   
         case 0x4:
-            if (i->funct7 != 0) {
+            if (i->funct7 != 0x0) {
                 printDecodeError(i, ERR_FUNCT7);
                 return;
             }
             strcpy(i->instr, "xor");
             break; 
+        case 0x5: 
+            switch (i->funct7) {
+            case 0x0:
+                strcpy(i->instr, "srl");
+                break;
+            case 0x20:
+                strcpy(i->instr, "sra");
+                break;
+            default:
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            break; 
+        case 0x6:
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "or");
+            break; 
+        case 0x7:
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "and");       
+            break;
         case 0x20:
             break;
         default:
