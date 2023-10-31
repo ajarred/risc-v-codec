@@ -17,5 +17,8 @@ After compilation, run the program with the following command:
 ./risc
 ```
 ## Current Instruction List
-add, sub, addi, ld, sd
+- add, sub, 
+- addi, ld, 
+- sd
+- beq
 
