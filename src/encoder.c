@@ -163,9 +163,9 @@ void obtainArguments(instruction* i, const char* s) {
                 return;
             }
         }
-        // format: ld rd, imm (rs1)
+        // format: ld rd, imm(rs1)
         if (strcmp(i->instr, "ld") == 0) {
-            if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rd, imm, rs1) == 4) {
+            if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rd, imm, rs1) == 4) {
                 if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
@@ -193,9 +193,9 @@ void obtainArguments(instruction* i, const char* s) {
         }
         break;
     case S:
-        // format: sd rs2, imm (rs1)
+        // format: sd rs2, imm(rs1)
         if (strcmp(i->instr, "sd") == 0) {
-            if (sscanf(s, "%5s x%3[^,], %5[-0-9] ( x%3[^)] )", instr, rs2, imm, rs1) == 4) {
+            if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rs2, imm, rs1) == 4) {
                 if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
                     printEncodeError(i, ERR_BUFFER_OVERFLOW);
                     return;
@@ -300,14 +300,14 @@ void obtainInput(instruction* i) {
             (i->rs1 << BIT_RS1) |
             (i->rs2 << BIT_RS2) |
             (i->funct7 << BIT_FUNCT7);
-        printf("input = 0x%x\n", i->input);
+        // printf("input = 0x%x\n", i->input);
         break;
     case I:
         i->input = i->opcode | (i->rd << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |
             (i->immediate << BIT_RS2);
-        printf("input = 0x%x\n", i->input);
+        // printf("input = 0x%x\n", i->input);
         break;
     case S:
         immLower = i->immediate & MASK_5BITS; 
@@ -317,24 +317,33 @@ void obtainInput(instruction* i) {
             (i->rs1 << BIT_RS1) |
             (i->rs2 << BIT_RS2) |
             (immUpper << BIT_FUNCT7);
-        printf("input = 0x%x\n", i->input);
+        // printf("input = 0x%x\n", i->input);
         break;
     default:
         break;
     }
 }
 
-bool encodeInstruction(const char* s) {
+instruction* createEncodedInstruction(const char* s) {
     instruction* i = malloc(sizeof(instruction));
     obtainInstruction(i, s);
     obtainArguments(i, s);
     obtainFunct7(i);
     obtainFunct3(i);
     obtainOpcode(i);
+    obtainInput(i);
+    if (i->type == INVALID) {
+        return NULL;
+    }
+    return i;
+}
+
+bool encodeInstruction(const char* s) {
+    instruction* i = createEncodedInstruction(s);
     if (i == NULL) {
         return false;
     }
-    obtainInput(i);
+    printf("0x%x\n", i->input);
     free(i->assemblyStr);
     free(i);
     return true;
