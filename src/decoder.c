@@ -36,46 +36,24 @@ bool convertStrToUint(char* str, unsigned int *n) {
 }
 
 void printDecodeError(instruction* i, const enum ErrorType err) {
+    i->opcode = INVALID;
     switch (err) {
     case ERR_OPCODE:
-        i->type = INVALID;
         fprintf(stderr, "Opcode not found\n");
         printf("Opcode = %x\n", i->opcode);
         break;
     case ERR_FUNCT3:
-        i->type = INVALID;
-        switch(i->opcode) {
-        case R_TYPE:
-        case I_TYPE_IMM:
-            fprintf(stderr, "Invalid funct3. Funct3 must be 0x0\n");
-            printf("Opcode = %x, ", i->opcode);
-            printf("Funct3 = %x\n", i->funct3);
-            break;
-        case I_TYPE_LOAD:
-        case S_TYPE:
-            fprintf(stderr, "Invalid funct3. Funct3 must be 0x3\n");
-            printf("Opcode = %x, ", i->opcode);
-            printf("Funct3 = %x\n", i->funct3);
-            break;
-        default:
-            break;
-        }
+        fprintf(stderr, "Invalid funct3\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x\n", i->funct3);
         break;
     case ERR_FUNCT7:
-        switch(i->opcode) {
-        case R_TYPE:
-            i->type = INVALID;
-            fprintf(stderr, "Invalid funct7. Funct7 must be either 0x0 or 0x20\n");
-            printf("Opcode = %x, ", i->opcode);
-            printf("Funct3 = %x, ", i->funct3);
-            printf("Funct7 = %x\n", i->funct7);
-            break;
-        default:
-            break;
-        }
+        fprintf(stderr, "Invalid funct7\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);
+        printf("Funct7 = %x\n", i->funct7);
         break;
     case ERR_X0_RD:
-        i->type = INVALID;
         fprintf(stderr, "Invalid rd: Register x0 cannot be modified\n");
         printf("Opcode = %x, ", i->opcode);
         printf("Funct3 = %x, ", i->funct3);            
@@ -96,20 +74,13 @@ void parseOpcode(instruction* i) {
 
     switch (i->opcode) {
     case R_TYPE:
-        i->type = R;
-        break;
     case I_TYPE_LOAD:
     case I_TYPE_IMM:
-        i->type = I;
-        break;
     case S_TYPE:
-        i->type = S;
-        break;
     case B_TYPE:
-        i->type = B;
         break;
     default:
-        i->type = INVALID;
+        i->opcode = INVALID;
         printDecodeError(i, ERR_OPCODE);
         break;
     }
@@ -117,7 +88,7 @@ void parseOpcode(instruction* i) {
 
 // parse bits 12-14
 void parseFunct3(instruction* i) {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     unsigned int mask = MASK_3BITS << BIT_FUNCT3; 
@@ -176,7 +147,7 @@ void parseFunct3(instruction* i) {
 
 // parse bits 25-32
 void parseFunct7(instruction* i) {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     unsigned int mask = MASK_7BITS << BIT_FUNCT7; 
@@ -218,7 +189,7 @@ void parseFunct7(instruction* i) {
 
 // parse bits 7-11
 void parseRd(instruction* i) {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     unsigned int mask = MASK_5BITS << BIT_RD;
@@ -252,7 +223,7 @@ void parseRd(instruction* i) {
 
 // parse bits 15-19
 void parseRs1(instruction* i) {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     unsigned int mask = MASK_5BITS << BIT_RS1;
@@ -272,7 +243,7 @@ void parseRs1(instruction* i) {
 // parse bits 20-24
 void parseRs2(instruction* i)
 {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     unsigned int mask = MASK_5BITS << BIT_RS2;
@@ -294,77 +265,37 @@ void parseRs2(instruction* i)
     }
 }
 
-/*
-void printInstructions(instruction* i) {
-    if (i->type == INVALID) {
-        return;
-    }
-    switch (i->type) {
-    case R:
-        printf("%s x%d, x%d, x%d\n", 
-        i->instr, i->rd, i->rs1, i->rs2);
-        break;
-    case I:
-        switch (i->opcode) {
-        case I_TYPE_IMM:
-            printf("%s x%d, x%d, %d\n", 
-            i->instr, i->rd, i->rs1, i->immediate);
-            break;
-        case I_TYPE_LOAD:
-            printf("%s x%d, %d (x%d)\n", 
-            i->instr, i->rd, i->immediate, i->rs1);
-            break;
-        default:
-            break;
-        }
-        break;
-    case S:
-        printf("%s x%d, %d (x%d)\n", 
-        i->instr, i->rs2, i->immediate, i->rs1);
-        break;
-    default:
-        break;
-    }
-}
-*/
-
 void getAssemblyString(instruction* i) {
-    if (i->type == INVALID) {
+    if (i == NULL || i->opcode == INVALID) {
         return;
     }
     char tempString[32];
 
-    switch (i->type) {
-    case R:
+    switch (i->opcode) {
+    case R_TYPE:
         snprintf(tempString, sizeof(tempString), "%s x%d, x%d, x%d", 
                                     i->instr, i->rd, i->rs1, i->rs2);
         break;
-    case I:
-        switch (i->opcode) {
-        case I_TYPE_IMM:
-            snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d", 
-                                 i->instr, i->rd, i->rs1, i->immediate);
-            break;
-        case I_TYPE_LOAD:
-            snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
-                                  i->instr, i->rd, i->immediate, i->rs1);
-            break;
-        default:
-            break;
-        }
+    case I_TYPE_IMM:
+        snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d", 
+                            i->instr, i->rd, i->rs1, i->immediate);
         break;
-    case S:
+    case I_TYPE_LOAD:
+        snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
+                            i->instr, i->rd, i->immediate, i->rs1);
+        break;
+    case S_TYPE:
         snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
                              i->instr, i->rs2, i->immediate, i->rs1);
         break;
-    case B:
+    case B_TYPE:
         snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d",
                            i->instr, i->rs1, i->rs2, i->immediate);
         break;
     default:
         break;
     }
-    i->assemblyStr = (char*)malloc(strlen(tempString) + 1);
+    i->assemblyStr = (char*) malloc(strlen(tempString) + 1);
     if (i->assemblyStr == NULL) {
         return;
     }
@@ -372,7 +303,7 @@ void getAssemblyString(instruction* i) {
 }
 
 void printdecodedAssembly(instruction* i) {
-    if (i->assemblyStr == NULL) {
+    if (i == NULL || i->opcode == INVALID || i->assemblyStr == NULL) {
         return;
     }
     printf("%s\n", i->assemblyStr);
@@ -388,7 +319,7 @@ instruction* createDecodedInstruction(unsigned int hex) {
     parseRs1(i);
     parseRs2(i);
     getAssemblyString(i);
-    if (i->type == INVALID) {
+    if (i->opcode == INVALID) {
         return NULL;
     }
     return i;

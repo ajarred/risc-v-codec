@@ -7,15 +7,8 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-enum Format { 
-    INVALID,
-    R, 
-    I, 
-    S,
-    B 
-};
-
 enum Opcode {
+    INVALID,
     R_TYPE = 0x33u, 
     I_TYPE_IMM = 0x13u,
     I_TYPE_LOAD = 0x3u,
@@ -50,7 +43,6 @@ enum Imm {
 
 typedef struct instruction {
     unsigned int input;
-    unsigned int type;
     unsigned int opcode;
     unsigned int rd;
     unsigned int funct3;
