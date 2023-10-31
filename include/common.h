@@ -27,16 +27,17 @@ enum BitPlace {
 enum MaskValues {
     MASK_1BIT = 0x1,
     MASK_3BITS = 0x7, 
-    MASK_4BIT = 0xf,
+    MASK_4BITS = 0xf,
     MASK_5BITS = 0x1f, 
-    MASK_6BIT = 0x3f,
+    MASK_6BITS = 0x3f,
     MASK_7BITS = 0x7f 
 }; 
 
-enum Imm12 {
+enum Imm {
     IMM_LOWER, 
     IMM_UPPER = 5, 
-    IMM12_MSB = 11
+    IMM12_MSB = 11,
+    IMM13_MSB = 12
 };
 
 typedef struct instruction {
