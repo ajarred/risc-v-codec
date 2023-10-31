@@ -9,9 +9,9 @@ enum ErrorType {
 
 enum Opcode {
     R_TYPE = 0x33u, 
-    ADDI = 0x13u,
-    LD = 0x3u,
-    SD = 0x23u
+    I_TYPE_IMM = 0x13u,
+    I_TYPE_LOAD = 0x3u,
+    S_TYPE = 0x23u
 };
 
 bool isHex(char* str) {
@@ -53,13 +53,13 @@ void printError(instruction* i, const enum ErrorType err) {
         i->type = INVALID;
         switch(i->opcode) {
         case R_TYPE:
-        case ADDI:
+        case I_TYPE_IMM:
             fprintf(stderr, "Invalid funct3. Funct3 must be 0x0\n");
             printf("Opcode = %x, ", i->opcode);
             printf("Funct3 = %x\n", i->funct3);
             break;
-        case LD:
-        case SD:
+        case I_TYPE_LOAD:
+        case S_TYPE:
             fprintf(stderr, "Invalid funct3. Funct3 must be 0x3\n");
             printf("Opcode = %x, ", i->opcode);
             printf("Funct3 = %x\n", i->funct3);
@@ -105,11 +105,11 @@ void parseOpcode(instruction* i) {
     case R_TYPE:
         i->type = R;
         break;
-    case LD:
-    case ADDI:
+    case I_TYPE_LOAD:
+    case I_TYPE_IMM:
         i->type = I;
         break;
-    case SD:
+    case S_TYPE:
         i->type = S;
         break;
     default:
@@ -133,26 +133,35 @@ void parseFunct3(instruction* i) {
             return;
         }
         break;
-    case ADDI:
-        if (i->funct3 != 0x0) {
-            printError(i, ERR_FUNCT3);
-            return;
+    case I_TYPE_IMM:
+        switch(i->funct3) {
+            case 0x0:
+                strcpy(i->instr, "addi");
+                break;
+            default:
+                printError(i, ERR_FUNCT3);
+                return;
         }
-        strcpy(i->instr, "addi");
         break;
-    case LD:
-        if (i->funct3 != 0x3) {
-            printError(i, ERR_FUNCT3);
-            return;
+    case I_TYPE_LOAD:
+        switch(i->funct3) {
+            case 0x3:
+                strcpy(i->instr, "ld");
+                break;
+            default:
+                printError(i, ERR_FUNCT3);
+                return;
         }
-        strcpy(i->instr, "ld");
         break;
-    case SD:
-        if (i->funct3 != 0x3) {
-            printError(i, ERR_FUNCT3);
-            return;
+    case S_TYPE:
+        switch(i->funct3) {
+            case 0x3:
+                strcpy(i->instr, "sd");
+                break; 
+            default:
+                printError(i, ERR_FUNCT3);
+                return;
         }
-        strcpy(i->instr, "sd");
         break;
     default:
         break;
@@ -185,9 +194,9 @@ void parseFunct7(instruction* i) {
             break;
         }
         break;
-    case ADDI:
-    case LD:
-    case SD:
+    case I_TYPE_IMM:
+    case I_TYPE_LOAD:
+    case S_TYPE:
         i->immediate = (funct7 << IMM_UPPER);
         break;
     default:
@@ -208,15 +217,15 @@ void parseRd(instruction* i) {
     int signedCheck;
     switch (i->opcode) {
     case R_TYPE:
-    case ADDI:     
-    case LD:
+    case I_TYPE_IMM:     
+    case I_TYPE_LOAD:
         i->rd = rd;
         if(rd == 0x0) {
             printError(i, ERR_X0_RD);
             return;
         } 
         break;
-    case SD:
+    case S_TYPE:
         signedCheck = ((i->immediate) | rd);
         i->immediate = SIGNEX(signedCheck, IMM12_MSB);
         break;
@@ -234,9 +243,9 @@ void parseRs1(instruction* i) {
     i->rs1 = (mask & i->input) >> BIT_RS1;
     switch (i->opcode) {
     case R_TYPE:
-    case ADDI:
-    case LD:
-    case SD:
+    case I_TYPE_IMM:
+    case I_TYPE_LOAD:
+    case S_TYPE:
         break;
     default:
         break;
@@ -254,11 +263,11 @@ void parseRs2(instruction* i)
     int signedCheck;
     switch (i->opcode) {
     case R_TYPE:
-    case SD:
+    case S_TYPE:
         i->rs2 = rs2;
         break;
-    case ADDI:
-    case LD:
+    case I_TYPE_IMM:
+    case I_TYPE_LOAD:
         signedCheck = ((i->immediate) | rs2);
         i->immediate = SIGNEX(signedCheck, IMM12_MSB);
         break;
@@ -278,11 +287,11 @@ void printInstructions(instruction* i) {
         break;
     case I:
         switch (i->opcode) {
-        case ADDI:
+        case I_TYPE_IMM:
             printf("%s x%d, x%d, %d\n", 
             i->instr, i->rd, i->rs1, i->immediate);
             break;
-        case LD:
+        case I_TYPE_LOAD:
             printf("%s x%d, %d (x%d)\n", 
             i->instr, i->rd, i->immediate, i->rs1);
             break;
@@ -312,12 +321,12 @@ void getAssemblyString(instruction* i) {
         break;
     case I:
         switch (i->opcode) {
-        case ADDI:
+        case I_TYPE_IMM:
             snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d", 
                                  i->instr, i->rd, i->rs1, i->immediate);
             break;
-        case LD:
-            snprintf(tempString, sizeof(tempString), "%s x%d, %d (x%d)", 
+        case I_TYPE_LOAD:
+            snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
                                   i->instr, i->rd, i->immediate, i->rs1);
             break;
         default:
@@ -325,7 +334,7 @@ void getAssemblyString(instruction* i) {
         }
         break;
     case S:
-        snprintf(tempString, sizeof(tempString), "%s x%d, %d (x%d)", 
+        snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
                              i->instr, i->rs2, i->immediate, i->rs1);
         break;
     default:
@@ -345,7 +354,7 @@ void printdecodedAssembly(instruction* i) {
     printf("%s\n", i->assemblyStr);
 }
 
-instruction* createInstruction(unsigned int hex) {
+instruction* createDecodedInstruction(unsigned int hex) {
     instruction* i = malloc(sizeof(instruction));
     i->input = hex;
     parseOpcode(i); 
@@ -364,7 +373,7 @@ instruction* createInstruction(unsigned int hex) {
 bool decodeInstruction(char* input) {
     unsigned int n = 0;
     if (convertStrToUint(input, &n)) {
-        instruction* i = createInstruction(n);
+        instruction* i = createDecodedInstruction(n);
         if (i == NULL) {
             return false;
         }
@@ -375,4 +384,3 @@ bool decodeInstruction(char* input) {
     }
     return false;
 }
-
