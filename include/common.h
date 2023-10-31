@@ -15,6 +15,14 @@ enum Format {
     B 
 };
 
+enum Opcode {
+    R_TYPE = 0x33u, 
+    I_TYPE_IMM = 0x13u,
+    I_TYPE_LOAD = 0x3u,
+    S_TYPE = 0x23u,
+    B_TYPE = 0x63u
+};
+
 enum BitPlace {
     BIT_OPCODE = 0,
     BIT_RD = 7,
