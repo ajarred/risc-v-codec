@@ -77,7 +77,8 @@ void listAvailableInstructions() {
     "sub rd, rs1, rs2\n"
     "addi rd, rs1, imm\n"
     "ld rd, imm(rs1)\n"
-    "sd rs2, imm(rs1)\n");
+    "sd rs2, imm(rs1)\n"
+    "beq rs1, rs2, imm\n");
 }          
 
 void listAvailableCommands() {
