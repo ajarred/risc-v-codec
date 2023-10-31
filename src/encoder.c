@@ -54,6 +54,7 @@ void printEncodeError(instruction* i, const enum ErrorType err) {
 bool isValidInstruction(const char* s) {
     if (strncmp(s, "add", 3) == 0 ||
         strncmp(s, "sub", 3) == 0 ||
+        strncmp(s, "xor", 3) == 0 ||
         strncmp(s, "addi",4) == 0 ||
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
@@ -78,6 +79,10 @@ void obtainInstruction(instruction* i, const char* s) {
         return;
     } else if (strncmp(s, "sub", 3) == 0) {
         strcpy(i->instr, "sub");
+        i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "xor", 3) == 0) {
+        strcpy(i->instr, "xor");
         i->opcode = R_TYPE;
         return;
     } else if (strncmp(s, "ld",  2) == 0) {
@@ -264,7 +269,8 @@ void obtainFunct7(instruction* i) {
     }
     switch(i->opcode) {
     case R_TYPE:
-        if (strncmp(i->instr, "add", 3) == 0) {
+        if (strncmp(i->instr, "add", 3) == 0 ||
+            strncmp(i->instr, "xor", 2) == 0) {
             i->funct7 = 0x0;
         }
         if (strncmp(i->instr, "sub", 3) == 0) {
@@ -292,7 +298,9 @@ void obtainFunct3(instruction* i) {
     } else if ((strncmp(i->instr, "ld", 2) == 0) ||
                (strncmp(i->instr, "sd", 2) == 0)) {
         i->funct3 = 0x3;
-    } 
+    } else if (strncmp(i->instr, "xor", 3) == 0) {
+        i->funct3 = 0x4;
+    }
 }
 
 void obtainOpcode(instruction* i) {
@@ -302,7 +310,8 @@ void obtainOpcode(instruction* i) {
     switch(i->opcode) {
     case R_TYPE:
         if ((strncmp(i->instr, "add", 3) == 0) || 
-        (strncmp(i->instr, "sub", 3) == 0)) {
+        (strncmp(i->instr, "sub", 3) == 0) ||
+        (strncmp(i->instr, "xor", 3) == 0)) {
             i->opcode = R_TYPE;
         }
         break;

@@ -75,10 +75,12 @@ void listAvailableInstructions() {
     printf("Available instruction formats:\n"
     "add rd, rs1, rs2\n"
     "sub rd, rs1, rs2\n"
+    "xor rd, rs1, rs2\n"
     "addi rd, rs1, imm\n"
     "ld rd, imm(rs1)\n"
     "sd rs2, imm(rs1)\n"
-    "beq rs1, rs2, imm\n");
+    "beq rs1, rs2, imm\n"
+    );
 }          
 
 void listAvailableCommands() {
@@ -192,6 +194,16 @@ void runUnitTest() {
     assert(test->input == 0x7fef8fe3);
     free(test->assemblyStr);
     free(test);  
+
+    test = createDecodedInstruction(0x01e7c0b3);
+    assert(strcmp(test->assemblyStr, "xor x1, x15, x30") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("xor x1, x15, x30");
+    assert(test->input == 0x01e7c0b3);
+    free(test->assemblyStr);
+    free(test);   
 
     printf("\nPassed all tests\n");
 }

@@ -95,9 +95,13 @@ void parseFunct3(instruction* i) {
     i->funct3 = (mask & i->input) >> BIT_FUNCT3;
     switch(i->opcode) {
     case R_TYPE:
-        if (i->funct3 != 0x0) {
-            printDecodeError(i, ERR_FUNCT3);
-            return;
+        switch(i->funct3) {
+            case 0x0:
+            case 0x4:
+                break;
+            default:
+                printDecodeError(i, ERR_FUNCT3);
+                return;
         }
         break;
     case I_TYPE_IMM:
@@ -155,21 +159,34 @@ void parseFunct7(instruction* i) {
     switch (i->opcode) {
     case R_TYPE:
         i->funct7 = funct7;
-        if (i->funct7 != 0x0 && funct7 != 0x20)
-        {
-            printDecodeError(i, ERR_FUNCT7);
-            return;
-        }
-        switch (i->funct7) {
+        switch (i->funct3) {
         case 0x0:
-            strcpy(i->instr, "add");
+            switch (i->funct7) {
+            case 0x0:
+                strcpy(i->instr, "add");
+                break;
+            case 0x20:
+                strcpy(i->instr, "sub");
+                break;
+            default:
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
             break;
+        case 0x4:
+            if (i->funct7 != 0) {
+                printDecodeError(i, ERR_FUNCT7);
+                return;
+            }
+            strcpy(i->instr, "xor");
+            break; 
         case 0x20:
-            strcpy(i->instr, "sub");
             break;
         default:
+            printDecodeError(i, ERR_FUNCT7);
             break;
         }
+
         break;
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
