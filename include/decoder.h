@@ -9,7 +9,7 @@ bool convertStrToUint(char* str, unsigned int *n);
 
 void printInstructions(instruction* i);
 
-instruction* createInstruction(unsigned int hex);
+instruction* createDecodedInstruction(unsigned int hex);
 
 bool decodeInstruction(char* input);
 
