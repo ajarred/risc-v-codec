@@ -7,6 +7,8 @@ bool isValidInstruction(const char* s);
 
 void obtainInput(instruction* i);
 
+instruction* createEncodedInstruction(const char* s);
+
 bool encodeInstruction(const char* s);
 
 #endif
