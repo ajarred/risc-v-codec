@@ -42,7 +42,7 @@ bool convertStrToUint(char* str, unsigned int *n) {
     return true;
 }
 
-void printError(instruction* i, const enum ErrorType err) {
+void printDecodeError(instruction* i, const enum ErrorType err) {
     switch (err) {
     case ERR_OPCODE:
         i->type = INVALID;
@@ -114,7 +114,7 @@ void parseOpcode(instruction* i) {
         break;
     default:
         i->type = INVALID;
-        printError(i, ERR_OPCODE);
+        printDecodeError(i, ERR_OPCODE);
         break;
     }
 }
@@ -129,7 +129,7 @@ void parseFunct3(instruction* i) {
     switch(i->opcode) {
     case R_TYPE:
         if (i->funct3 != 0x0) {
-            printError(i, ERR_FUNCT3);
+            printDecodeError(i, ERR_FUNCT3);
             return;
         }
         break;
@@ -139,7 +139,7 @@ void parseFunct3(instruction* i) {
                 strcpy(i->instr, "addi");
                 break;
             default:
-                printError(i, ERR_FUNCT3);
+                printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
@@ -149,7 +149,7 @@ void parseFunct3(instruction* i) {
                 strcpy(i->instr, "ld");
                 break;
             default:
-                printError(i, ERR_FUNCT3);
+                printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
@@ -159,7 +159,7 @@ void parseFunct3(instruction* i) {
                 strcpy(i->instr, "sd");
                 break; 
             default:
-                printError(i, ERR_FUNCT3);
+                printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
@@ -180,7 +180,7 @@ void parseFunct7(instruction* i) {
         i->funct7 = funct7;
         if (i->funct7 != 0x0 && funct7 != 0x20)
         {
-            printError(i, ERR_FUNCT7);
+            printDecodeError(i, ERR_FUNCT7);
             return;
         }
         switch (i->funct7) {
@@ -221,7 +221,7 @@ void parseRd(instruction* i) {
     case I_TYPE_LOAD:
         i->rd = rd;
         if(rd == 0x0) {
-            printError(i, ERR_X0_RD);
+            printDecodeError(i, ERR_X0_RD);
             return;
         } 
         break;
