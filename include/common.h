@@ -11,7 +11,8 @@ enum Format {
     INVALID,
     R, 
     I, 
-    S 
+    S,
+    B 
 };
 
 enum BitPlace {
@@ -24,10 +25,13 @@ enum BitPlace {
 };
 
 enum MaskValues {
+    MASK_1BIT = 0x1,
     MASK_3BITS = 0x7, 
+    MASK_4BIT = 0xf,
     MASK_5BITS = 0x1f, 
+    MASK_6BIT = 0x3f,
     MASK_7BITS = 0x7f 
-};
+}; 
 
 enum Imm12 {
     IMM_LOWER, 
