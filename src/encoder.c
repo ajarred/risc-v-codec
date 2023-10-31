@@ -32,7 +32,10 @@ void printEncodeError(instruction* i, const enum ErrorType err) {
         fprintf(stderr, "Invalid I-type instruction\nUsage: instr rd, imm(rs1)\n");
         break;
     case ERR_INSTR_S:
-        fprintf(stderr, "Invalid S-type instruction\nUsage: rs2, imm(rs1)\n");
+        fprintf(stderr, "Invalid S-type instruction\nUsage: instr rs2, imm(rs1)\n");
+        break;
+    case ERR_INSTR_B:
+        fprintf(stderr, "Invalid B-type instruction\nUsage: instr rs1, rs2, imm\n");
         break;
     case ERR_REGISTER_OVERFLOW:
         fprintf(stderr, "Invalid register\n");
@@ -109,160 +112,145 @@ void obtainArguments(instruction* i, const char* s) {
     switch (i->opcode) {
     case R_TYPE:
         // instr rd, rs1, rs2
-        if (sscanf(s, "%5s x%3[^,], x%3[^,], x%3s", instr, rd, rs1, rs2) == 4) {
-            if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(rs2) > 3) {
-                printEncodeError(i, ERR_BUFFER_OVERFLOW);
-                return;
-            }
-            i->assemblyStr = (char*) malloc(strlen(s)+1);
-            strncpy(i->assemblyStr, s, strlen(s)+1);
-            if (i->assemblyStr == NULL) {
-                return;
-            }
-            i->rd = (unsigned int)strtoul(rd, NULL, 10);
-            i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
-            i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
-            if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
-                printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                return;
-            }
-            if (i->rd == 0x0) {
-                printEncodeError(i, ERR_RD_X0);
-                return;
-            }
-        } else {
+        if (sscanf(s, "%5s x%3[^,], x%3[^,], x%3s", instr, rd, rs1, rs2) != 4) {
             printEncodeError(i, ERR_INSTR_R);
+            return;
+        } 
+        if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(rs2) > 3) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        }
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rd = (unsigned int)strtoul(rd, NULL, 10);
+        i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
+        i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
+        if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->rd == 0x0) {
+            printEncodeError(i, ERR_RD_X0);
             return;
         } 
         break;
     case I_TYPE_IMM:
         // instr rd, rs1, imm
-        if (strcmp(i->instr, "addi") == 0) {
-            if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rd, rs1, imm) == 4) {
-                if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
-                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
-                    return;
-                }
-                i->assemblyStr = (char*) malloc(strlen(s)+1);
-                if (i->assemblyStr == NULL) {
-                    return;
-                }
-                strncpy(i->assemblyStr, s, strlen(s)+1);
-                i->rd = (unsigned int)strtoul(rd, NULL, 10);
-                i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
-                i->immediate = (int)strtol(imm, NULL, 10);
-
-                if (i->rd > 31 || i->rs1 > 31) {
-                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                    return;
-                }
-                if (i->rd == 0x0) {
-                    printEncodeError(i, ERR_RD_X0);
-                    return;
-                }
-                if (i->immediate < -2048 || i->immediate > 2047) {
-                    printEncodeError(i, ERR_IMM_OVERFLOW);
-                    return;
-                }
-            } 
-        } else {
-            printEncodeError(i, ERR_INSTR_I_IMM);
+        if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rd, rs1, imm) != 4) {
+            printEncodeError(i, ERR_INSTR_R);
+            return;
+        }
+        if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        }
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rd = (unsigned int)strtoul(rd, NULL, 10);
+        i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
+        i->immediate = (int)strtol(imm, NULL, 10);
+        if (i->rd > 31 || i->rs1 > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->rd == 0x0) {
+            printEncodeError(i, ERR_RD_X0);
+            return;
+        }
+        if (i->immediate < -2048 || i->immediate > 2047) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
             return;
         }
         break;
     case I_TYPE_LOAD:
         // format: ld rd, imm(rs1)
-        if (strcmp(i->instr, "ld") == 0) {
-            if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rd, imm, rs1) == 4) {
-                if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
-                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
-                    return;
-                }
-                i->assemblyStr = (char*) malloc(strlen(s)+1);
-                if (i->assemblyStr == NULL) {
-                    return;
-                }
-                strncpy(i->assemblyStr, s, strlen(s)+1);
-                i->rd = (unsigned int)strtoul(rd, NULL, 10);
-                i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
-                i->immediate = (int)strtol(imm, NULL, 10);
-                if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
-                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                    return;
-                }
-                if (i->rd == 0x0) {
-                    printEncodeError(i, ERR_RD_X0);
-                    return;
-                }
-                if (i->immediate < -2048 || i->immediate > 2047) {
-                    printEncodeError(i, ERR_IMM_OVERFLOW);
-                    return;
-                }
-            } 
-        } else {
+        if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rd, imm, rs1) != 4) {
             printEncodeError(i, ERR_INSTR_I_LOAD);
+            return;
+        }
+        if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        }
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rd = (unsigned int)strtoul(rd, NULL, 10);
+        i->immediate = (int)strtol(imm, NULL, 10);
+        i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
+        if (i->rd > 31 || i->rs1 > 31 || i->rs2 > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->rd == 0x0) {
+            printEncodeError(i, ERR_RD_X0);
+            return;
+        }
+        if (i->immediate < -2048 || i->immediate > 2047) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
             return;
         }
         break;
     case S_TYPE:
         // instr rs2, imm(rs1)
-        if (strcmp(i->instr, "sd") == 0) {
-            if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rs2, imm, rs1) == 4) {
-                if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
-                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
-                    return;
-                }
-                i->assemblyStr = (char*) malloc(strlen(s)+1);
-                if (i->assemblyStr == NULL) {
-                    return;
-                }
-                strncpy(i->assemblyStr, s, strlen(s)+1);
-                i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
-                i->immediate = (int)strtoul(imm, NULL, 10);
-                i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
-                if (i->rs1 > 31 || i->rs2 > 31) {
-                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                    return;
-                }
-                if (i->immediate < -2048 || i->immediate > 2047) {
-                    printEncodeError(i, ERR_IMM_OVERFLOW);
-                    return;
-                }
-            } 
-        } else {
-                printEncodeError(i, ERR_INSTR_S);
-                return;
-        } 
+        if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rs2, imm, rs1) != 4) {
+            printEncodeError(i, ERR_INSTR_S);
+            return;
+        }
+        if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        }
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rs2 = (unsigned int)strtoul(rs2, NULL, 10);
+        i->immediate = (int)strtoul(imm, NULL, 10);
+        i->rs1 = (unsigned int)strtol(rs1, NULL, 10);
+        if (i->rs1 > 31 || i->rs2 > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->immediate < -2048 || i->immediate > 2047) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
+            return;
+        }
         break;
     case B_TYPE:
         // format: beq rs1, rs2, imm
-        if (strcmp(i->instr, "beq") == 0) {
-            if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rs1, rs2, imm) == 4) {
-                if (strlen(instr) > 5 || strlen(rs2) > 3 ||
-                      strlen(rs1) > 3 || strlen(imm) > 5) {
-                    printEncodeError(i, ERR_BUFFER_OVERFLOW);
-                    return;
-                }  
-                i->assemblyStr = (char*) malloc(strlen(s)+1);
-                if (i->assemblyStr == NULL) {
-                    return;
-                }
-                strncpy(i->assemblyStr, s, strlen(s)+1);
-                i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
-                i->rs2 = (unsigned int)strtol(rs2, NULL, 10);
-                i->immediate = (int)strtoul(imm, NULL, 10);
-                if (i->rs1 > 31 || i->rs2 > 31) {
-                    printEncodeError(i, ERR_REGISTER_OVERFLOW);
-                    return;
-                }
-                if (i->immediate < -4096 || i->immediate > 4094) {
-                    printEncodeError(i, ERR_IMM_OVERFLOW);
-                    return;
-                }
-            } 
-        } else {
+        if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rs1, rs2, imm) != 4) {
             printEncodeError(i, ERR_INSTR_B);
             return;  
+        }
+        if (strlen(instr) > 5 || strlen(rs2) > 3 || strlen(rs1) > 3 || strlen(imm) > 5) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        }  
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rs1 = (unsigned int)strtoul(rs1, NULL, 10);
+        i->rs2 = (unsigned int)strtol(rs2, NULL, 10);
+        i->immediate = (int)strtoul(imm, NULL, 10);
+        if (i->rs1 > 31 || i->rs2 > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->immediate < -4096 || i->immediate > 4094) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
+            return;
         }
         break;
     default:
@@ -276,10 +264,10 @@ void obtainFunct7(instruction* i) {
     }
     switch(i->opcode) {
     case R_TYPE:
-        if (strcmp(i->instr, "add") == 0) {
+        if (strncmp(i->instr, "add", 3) == 0) {
             i->funct7 = 0x0;
         }
-        if (strcmp(i->instr, "sub") == 0) {
+        if (strncmp(i->instr, "sub", 3) == 0) {
             i->funct7 = 0x20;
         } 
         break;
@@ -296,13 +284,13 @@ void obtainFunct3(instruction* i) {
     if (i == NULL || i->opcode == INVALID) {
         return;
     }
-    if ((strcmp(i->instr, "add") == 0) || 
-        (strcmp(i->instr, "sub") == 0) ||
-        (strcmp(i->instr, "addi")== 0) ||
-        (strcmp(i->instr, "beq") == 0)) {
+    if ((strncmp(i->instr, "add", 3) == 0) || 
+        (strncmp(i->instr, "sub", 3) == 0) ||
+        (strncmp(i->instr, "addi",4)== 0) ||
+        (strncmp(i->instr, "beq", 3) == 0)) {
         i->funct3 = 0x0;
-    } else if ((strcmp(i->instr, "ld") == 0) ||
-               (strcmp(i->instr, "sd") == 0)) {
+    } else if ((strncmp(i->instr, "ld", 2) == 0) ||
+               (strncmp(i->instr, "sd", 2) == 0)) {
         i->funct3 = 0x3;
     } 
 }
@@ -313,28 +301,28 @@ void obtainOpcode(instruction* i) {
     }
     switch(i->opcode) {
     case R_TYPE:
-        if ((strcmp(i->instr, "add") == 0) || 
-        (strcmp(i->instr, "sub") == 0)) {
+        if ((strncmp(i->instr, "add", 3) == 0) || 
+        (strncmp(i->instr, "sub", 3) == 0)) {
             i->opcode = R_TYPE;
         }
         break;
     case I_TYPE_IMM:
-        if (strcmp(i->instr, "addi") == 0) {
+        if (strncmp(i->instr, "addi", 4) == 0) {
             i->opcode = I_TYPE_IMM;
         }
         break;
     case I_TYPE_LOAD:
-        if (strcmp(i->instr, "ld") == 0) {
+        if (strncmp(i->instr, "ld", 2) == 0) {
             i->opcode = I_TYPE_LOAD;
         }
         break;
     case S_TYPE:
-        if (strcmp(i->instr, "sd") == 0) {
+        if (strncmp(i->instr, "sd", 2) == 0) {
             i->opcode = S_TYPE;
         }
         break;
     case B_TYPE:
-        if (strcmp(i->instr, "beq") == 0) {
+        if (strncmp(i->instr, "beq", 2) == 0) {
             i->opcode = B_TYPE;
         }
         break; 
