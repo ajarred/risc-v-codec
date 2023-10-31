@@ -17,8 +17,8 @@ After compilation, run the program with the following command:
 ./risc
 ```
 ## Current Instruction List
-- add, sub, xor, and, sll, srl, sra, slt, sltu
-- addi, ld
-- sd
-- beq
+- R-Type: add, sub, xor, and, sll, srl, sra, slt, sltu
+- I-Type: addi, ld
+- S-Type: sd
+- B-Type: beq
 

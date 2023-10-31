@@ -73,13 +73,16 @@ int main() {
 
 void listAvailableInstructions() {
     printf("Available instruction formats:\n"
-    "add rd, rs1, rs2\n"
-    "sub rd, rs1, rs2\n"
-    "xor rd, rs1, rs2\n"
-    "addi rd, rs1, imm\n"
-    "ld rd, imm(rs1)\n"
-    "sd rs2, imm(rs1)\n"
-    "beq rs1, rs2, imm\n"
+    "R-Type Instructions: instr rd, rs1, rs2\n"
+    "- add, sub, xor, and, sll, srl, sra, slt, sltu\n"
+    "I-Type Immediate Instructions: instr rd, rs1, imm\n"
+    "- addi\n"
+    "I-Type Load Instructions: format: ld rd, imm(rs1)\n"
+    "- ld\n"
+    "S-Type Instructions: instr rs2, imm(rs1)\n"
+    "- sd\n"
+    "B-Type Instructions: instr rs1, rs2, imm"
+    "- beq\n"
     );
 }          
 

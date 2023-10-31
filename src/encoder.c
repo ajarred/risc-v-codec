@@ -267,7 +267,7 @@ void obtainArguments(instruction* i, const char* s) {
         }
         break;
     case B_TYPE:
-        // format: beq rs1, rs2, imm
+        // instr rs1, rs2, imm
         if (sscanf(s, "%5s x%3[^,], x%3[^,], %5[-0-9]", instr, rs1, rs2, imm) != 4) {
             printEncodeError(i, ERR_INSTR_B);
             return;  
