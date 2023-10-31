@@ -172,5 +172,25 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);     
 
+    test = createDecodedInstruction(0x80000063);
+    assert(strcmp(test->assemblyStr, "beq x0, x0, -4096") == 0);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x7fef8fe3);
+    assert(strcmp(test->assemblyStr, "beq x31, x30, 4094") == 0);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createEncodedInstruction("beq x0, x0, -4096");
+    assert(test->input == 0x80000063);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createEncodedInstruction("beq x31, x30, 4094");
+    assert(test->input == 0x7fef8fe3);
+    free(test->assemblyStr);
+    free(test);  
+
     printf("\nPassed all tests\n");
 }
