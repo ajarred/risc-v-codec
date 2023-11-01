@@ -65,15 +65,15 @@ bool isValidInstruction(const char* s) {
         strncmp(s, "addi",4) == 0 ||
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
-        strncmp(s, "beq", 3) == 0) {
+        strncmp(s, "beq", 3) == 0 ||
+        strncmp(s, "jal", 3) == 0) {
         return true;
     }
     return false;
 }
 
-void obtainInstruction(instruction* i, const char* s) {
-    if (!isValidInstruction(s) || i == NULL || 
-                  s == NULL || strlen(s) == 0) {
+void obtainOpcode(instruction* i, const char* s) {
+    if (!isValidInstruction(s) || i == NULL || s == NULL || strlen(s) == 0) {
         return;
     }
     if (strncmp(s, "addi",4) == 0) {
@@ -132,6 +132,10 @@ void obtainInstruction(instruction* i, const char* s) {
         strcpy(i->instr, "beq");
         i->opcode = B_TYPE;
         return;
+    } else if (strncmp(s, "jal", 3) == 0) {
+        strcpy(i->instr, "jal");
+        i->opcode = J_TYPE;
+        return;
     } else {
         printEncodeError(i, ERR_INSTR);
         return;
@@ -139,8 +143,7 @@ void obtainInstruction(instruction* i, const char* s) {
 }
 
 void obtainArguments(instruction* i, const char* s) {
-    if (i == NULL || i->opcode == INVALID || 
-        s == NULL || strlen(s) == 0) {
+    if (i == NULL || i->opcode == INVALID || s == NULL || strlen(s) == 0) {
         return;
     }
     i->assemblyStr = NULL;
@@ -148,7 +151,7 @@ void obtainArguments(instruction* i, const char* s) {
     char rs1[4] = "";
     char rs2[4] = "";
     char rd[4] = "";
-    char imm[6] = "";
+    char imm[9] = "";
     switch (i->opcode) {
     case R_TYPE:
         // instr rd, rs1, rs2
@@ -293,6 +296,32 @@ void obtainArguments(instruction* i, const char* s) {
             return;
         }
         break;
+    case J_TYPE:
+        // instr rd, imm
+        if (sscanf(s, "%5s x%3[^,], %8[-0-9]", instr, rd, imm) != 3) {
+            printEncodeError(i, ERR_INSTR_B);
+            return;  
+        }
+        if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(imm) > 8) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        } 
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rd = (unsigned int)strtoul(rd, NULL, 10);
+        i->immediate = (int)strtoul(imm, NULL, 10);
+        if (i->rd > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->immediate < -1048576 || i->immediate > 1048574) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
+            return;
+        }
+        break;
     default:
         break;
     }
@@ -323,6 +352,7 @@ void obtainFunct7(instruction* i) {
     case I_TYPE_LOAD:
     case S_TYPE:
     case B_TYPE:
+    case J_TYPE:
     default:
         break;
     }
@@ -358,6 +388,7 @@ void obtainFunct3(instruction* i) {
     } 
 }
 
+/*
 void obtainOpcode(instruction* i) {
     if (i == NULL || i->opcode == INVALID) {
         return;
@@ -401,6 +432,7 @@ void obtainOpcode(instruction* i) {
         break;
     }
 }
+*/
 
 void obtainInput(instruction* i) {
     if (i == NULL || i->opcode == INVALID) {
@@ -443,6 +475,16 @@ void obtainInput(instruction* i) {
                   (i->rs2 << BIT_RS2) |
                   (immUpper << BIT_FUNCT7);
         break;
+    case J_TYPE:
+        // imm[20|10:1|11|19:12  
+        immUpper = (((i->immediate >> 12) & MASK_8BITS) << 1) | // 19:12
+        (((i->immediate >> 11) & MASK_1BIT) << 9) | // 11 
+        (((i->immediate >> 1) & MASK_10BITS) << 10) | // 10:1 
+        (((i->immediate >> 20) & MASK_1BIT) << 20); // 20         
+        i->input = ((immUpper >> 1) << BIT_FUNCT3) | 
+                   (i->rd << BIT_RD) |
+                   i->opcode;
+        break;
     default:
         break;
     }
@@ -450,11 +492,11 @@ void obtainInput(instruction* i) {
 
 instruction* createEncodedInstruction(const char* s) {
     instruction* i = malloc(sizeof(instruction));
-    obtainInstruction(i, s);
+    obtainOpcode(i, s);
     obtainArguments(i, s);
     obtainFunct7(i);
     obtainFunct3(i);
-    obtainOpcode(i);
+    // obtainOpcode(i);
     obtainInput(i);
     if (i->opcode == INVALID) {
         return NULL;

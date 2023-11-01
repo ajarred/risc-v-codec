@@ -77,12 +77,14 @@ void listAvailableInstructions() {
     "- add, sub, xor, and, sll, srl, sra, slt, sltu\n"
     "I-Type Immediate Instructions: instr rd, rs1, imm\n"
     "- addi\n"
-    "I-Type Load Instructions: format: ld rd, imm(rs1)\n"
+    "I-Type Load Instructions: instr rd, imm(rs1)\n"
     "- ld\n"
     "S-Type Instructions: instr rs2, imm(rs1)\n"
     "- sd\n"
-    "B-Type Instructions: instr rs1, rs2, imm"
+    "B-Type Instructions: instr rs1, rs2, imm\n"
     "- beq\n"
+    "J-Type Instructions: instr rd, imm\n"
+    "- jal\n"
     );
 }          
 
@@ -275,6 +277,26 @@ void runUnitTest() {
 
     test = createEncodedInstruction("sltu x6, x8, x10");
     assert(test->input == 0x00a43333);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x800000ef);
+    assert(strcmp(test->assemblyStr, "jal x1, -1048576") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ffff16f);
+    assert(strcmp(test->assemblyStr, "jal x2, 1048574") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("jal x1, -1048576");
+    assert(test->input == 0x800000ef);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("jal x2, 1048574");
+    assert(test->input == 0x7ffff16f);
     free(test->assemblyStr);
     free(test);
 

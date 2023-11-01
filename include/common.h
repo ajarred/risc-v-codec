@@ -13,7 +13,8 @@ enum Opcode {
     I_TYPE_IMM = 0x13u,
     I_TYPE_LOAD = 0x3u,
     S_TYPE = 0x23u,
-    B_TYPE = 0x63u
+    B_TYPE = 0x63u,
+    J_TYPE = 0x6fu
 };
 
 enum BitPlace {
@@ -31,14 +32,18 @@ enum MaskValues {
     MASK_4BITS = 0xf,
     MASK_5BITS = 0x1f, 
     MASK_6BITS = 0x3f,
-    MASK_7BITS = 0x7f 
+    MASK_7BITS = 0x7f,
+    MASK_8BITS = 0xffu,
+    MASK_10BITS = 0x3ffu,
+    MASK_20BITS = 0xfffffu
 }; 
 
 enum Imm {
     IMM_LOWER, 
     IMM_UPPER = 5, 
     IMM12_MSB = 11,
-    IMM13_MSB = 12
+    IMM13_MSB = 12,
+    IMM21_MSB = 20
 };
 
 typedef struct instruction {

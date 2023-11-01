@@ -21,4 +21,5 @@ After compilation, run the program with the following command:
 - I-Type: addi, ld
 - S-Type: sd
 - B-Type: beq
+- J-Type: jal
 

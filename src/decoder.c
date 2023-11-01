@@ -79,6 +79,9 @@ void parseOpcode(instruction* i) {
     case S_TYPE:
     case B_TYPE:
         break;
+    case J_TYPE:
+        strcpy(i->instr, "jal");
+        break;
     default:
         i->opcode = INVALID;
         printDecodeError(i, ERR_OPCODE);
@@ -92,10 +95,10 @@ void parseFunct3(instruction* i) {
         return;
     }
     unsigned int mask = MASK_3BITS << BIT_FUNCT3; 
-    i->funct3 = (mask & i->input) >> BIT_FUNCT3;
+    unsigned int funct3 = (mask & i->input) >> BIT_FUNCT3;
     switch(i->opcode) {
     case R_TYPE:
-        switch(i->funct3) {
+        switch(funct3) {
             case 0x0:
             case 0x1:
             case 0x2:
@@ -104,52 +107,63 @@ void parseFunct3(instruction* i) {
             case 0x5:
             case 0x6:
             case 0x7:
+                i->funct3 = funct3;
                 break;
             default:
+                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case I_TYPE_IMM:
-        switch(i->funct3) {
+        switch(funct3) {
             case 0x0:
+                i->funct3 = funct3;
                 strcpy(i->instr, "addi");
                 break;
             default:
+                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case I_TYPE_LOAD:
-        switch(i->funct3) {
+        switch(funct3) {
             case 0x3:
+                i->funct3 = funct3;
                 strcpy(i->instr, "ld");
                 break;
             default:
+                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case S_TYPE:
-        switch(i->funct3) {
+        switch(funct3) {
             case 0x3:
+                i->funct3 = funct3;
                 strcpy(i->instr, "sd");
                 break; 
             default:
+                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case B_TYPE:
-        switch(i->funct3) {
+        switch(funct3) {
             case 0x0:
+                i->funct3 = funct3;
                 strcpy(i->instr, "beq");
                 break;
             default:
+                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 break;
         }
         break;
+    case J_TYPE:
     default:
         break;
     }
@@ -254,6 +268,7 @@ void parseFunct7(instruction* i) {
     case B_TYPE:
         i->immediate = funct7;
         break;
+    case J_TYPE:
     default:
         break;
     }
@@ -274,6 +289,7 @@ void parseRd(instruction* i) {
     case R_TYPE:
     case I_TYPE_IMM:     
     case I_TYPE_LOAD:
+    case J_TYPE:
         i->rd = rd;
         if(rd == 0x0) {
             printDecodeError(i, ERR_X0_RD);
@@ -302,14 +318,16 @@ void parseRs1(instruction* i) {
         return;
     }
     unsigned int mask = MASK_5BITS << BIT_RS1;
-    i->rs1 = (mask & i->input) >> BIT_RS1;
+    unsigned int rs1 = (mask & i->input) >> BIT_RS1;
     switch (i->opcode) {
     case R_TYPE:
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
     case S_TYPE:
     case B_TYPE:
+        i->rs1 = rs1;
         break;
+    case J_TYPE:
     default:
         break;
     }
@@ -323,7 +341,7 @@ void parseRs2(instruction* i)
     }
     unsigned int mask = MASK_5BITS << BIT_RS2;
     unsigned int rs2 = (mask & i->input) >> BIT_RS2;
-    int signedCheck;
+    int signedCheck, temp;
     switch (i->opcode) {
     case R_TYPE:
     case S_TYPE:
@@ -334,6 +352,16 @@ void parseRs2(instruction* i)
     case I_TYPE_LOAD:
         signedCheck = ((i->immediate) | rs2);
         i->immediate = SIGNEX(signedCheck, IMM12_MSB);
+        break;
+    case J_TYPE:
+        // imm[20|10:1|11|19:12] = risc format
+        // imm[20|19:10|9|8:1] = parsed
+        signedCheck = ((i->input >> 12) & MASK_20BITS) << 1;
+        temp = (signedCheck & (MASK_1BIT << 20)) | // 20
+               (((signedCheck >> 1) & MASK_8BITS) << 12) |  // 19:12
+               (((signedCheck >> 9) & MASK_1BIT) << 11) |  // 11
+               (((signedCheck >> 10) & MASK_10BITS) << 1); // 10:1
+        i->immediate = SIGNEX(temp, IMM21_MSB);
         break;
     default:
         break;
@@ -367,8 +395,12 @@ void getAssemblyString(instruction* i) {
         snprintf(tempString, sizeof(tempString), "%s x%d, x%d, %d",
                            i->instr, i->rs1, i->rs2, i->immediate);
         break;
+    case J_TYPE:
+        snprintf(tempString, sizeof(tempString), "%s x%d, %d",
+                               i->instr, i->rd, i->immediate);     
+        break; 
     default:
-        break;
+        return;
     }
     i->assemblyStr = (char*) malloc(strlen(tempString) + 1);
     if (i->assemblyStr == NULL) {
