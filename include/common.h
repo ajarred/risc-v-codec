@@ -15,6 +15,7 @@ enum Opcode {
     S_TYPE = 0x23u,
     B_TYPE = 0x63u,
     J_TYPE = 0x6fu,
+    JALR = 0x67u,
     LUI = 0x37u,
     AUIPC = 0x17u,
     ENV = 0x73u

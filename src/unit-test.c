@@ -256,5 +256,25 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x80000a67);
+    assert(strcmp(test->assemblyStr, "jalr x20, -2048(x0)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("jalr x20, -2048(x0)");
+    assert(test->input == 0x80000a67);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff00a67);
+    assert(strcmp(test->assemblyStr, "jalr x20, 2047(x0)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("jalr x20, 2047(x0)");
+    assert(test->input == 0x7ff00a67);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

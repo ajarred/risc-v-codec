@@ -87,6 +87,9 @@ void parseOpcode(instruction* i) {
     case B_TYPE:
     case ENV:
         break;
+    case JALR:
+        strcpy(i->instr, "jalr");
+        break;
     case J_TYPE:
         strcpy(i->instr, "jal");
         break;
@@ -177,6 +180,7 @@ void parseFunct3(instruction* i) {
                 return;
         }
         break;
+    case JALR:
     case ENV:
         i->funct3 = funct3;
         if (i->funct3 != 0x0) {
@@ -286,6 +290,7 @@ void parseFunct7(instruction* i) {
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
     case S_TYPE:
+    case JALR:
         i->immediate = (funct7 << IMM_UPPER);
         break;
     case B_TYPE:
@@ -321,6 +326,7 @@ void parseRd(instruction* i) {
     case I_TYPE_IMM:     
     case I_TYPE_LOAD:
     case J_TYPE:
+    case JALR:
     case LUI:
     case AUIPC:
         i->rd = rd;
@@ -362,6 +368,7 @@ void parseRs1(instruction* i) {
     case I_TYPE_LOAD:
     case S_TYPE:
     case B_TYPE:
+    case JALR:
         i->rs1 = rs1;
         break;
     case ENV:
@@ -394,6 +401,7 @@ void parseRs2(instruction* i)
         break;
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
+    case JALR:
         signedCheck = ((i->immediate) | rs2);
         i->immediate = SIGNEX(signedCheck, IMM12_MSB);
         break;
@@ -447,6 +455,7 @@ void getAssemblyString(instruction* i) {
                             i->instr, i->rd, i->rs1, i->immediate);
         break;
     case I_TYPE_LOAD:
+    case JALR:
         snprintf(tempString, sizeof(tempString), "%s x%d, %d(x%d)", 
                             i->instr, i->rd, i->immediate, i->rs1);
         break;

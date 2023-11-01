@@ -94,6 +94,7 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "sd",  2) == 0 ||
         strncmp(s, "beq", 3) == 0 ||
         strncmp(s, "jal", 3) == 0 ||
+        strncmp(s,"jalr", 4) == 0 ||
         strncmp(s, "lui", 3) == 0 ||
         strncmp(s,"auipc",5) == 0 ||
         strncmp(s,"ecall",4) == 0 ||
@@ -167,6 +168,11 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "beq", 3) == 0) {
         strcpy(i->instr, "beq");
         i->opcode = B_TYPE;
+        return;
+    } 
+    else if (strncmp(s, "jalr", 4) == 0) {
+        strcpy(i->instr, "jalr");
+        i->opcode = JALR;
         return;
     } else if (strncmp(s, "jal", 3) == 0) {
         strcpy(i->instr, "jal");
@@ -261,6 +267,7 @@ void obtainArguments(instruction* i, const char* str) {
         }
         break;
     case I_TYPE_LOAD:
+    case JALR:
         // format: ld rd, imm(rs1)
         if (sscanf(s, "%5s x%3[^,], %5[-0-9](x%3[^)])", instr, rd, imm, rs1) != 4) {
             printEncodeError(i, ERR_INSTR_I_LOAD);
@@ -464,6 +471,7 @@ void obtainFunct3(instruction* i) {
         (strncmp(i->instr, "sub", 3) == 0) ||
         (strncmp(i->instr, "addi",4) == 0) ||
         (strncmp(i->instr, "beq", 3) == 0) ||
+        (strncmp(i->instr, "jalr",4) == 0) ||
         (strncmp(i->instr, "ecall", 5) == 0) ||
         (strncmp(i->instr, "ebreak", 6) == 0)) {
         i->funct3 = 0x0;
@@ -504,6 +512,7 @@ void obtainInput(instruction* i) {
         break;
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
+    case JALR:
     case ENV:
         i->input = i->opcode | (i->rd << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |

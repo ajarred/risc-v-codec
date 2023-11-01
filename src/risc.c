@@ -84,6 +84,8 @@ void listAvailableInstructions() {
     "- beq\n"
     "J-Type Instructions: instr rd, imm\n"
     "- jal\n"
+    "Jump Immediate Instructions: instr rd, imm\n"
+    "- jalr\n"
     "U-Type Instructions: instr rd, imm\n"
     "- lui, auipc\n"
     "Environment Instructions: instr rd, imm\n"
