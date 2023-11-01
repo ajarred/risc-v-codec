@@ -86,6 +86,8 @@ void listAvailableInstructions() {
     "- jal\n"
     "U-Type Instructions: instr rd, imm\n"
     "- lui, auipc\n"
+    "Environment Instructions: instr rd, imm\n"
+    "- ecall, ebreak\n"
     );
 }          
 
