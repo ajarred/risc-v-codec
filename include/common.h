@@ -16,7 +16,8 @@ enum Opcode {
     B_TYPE = 0x63u,
     J_TYPE = 0x6fu,
     LUI = 0x37u,
-    AUIPC = 0x17u
+    AUIPC = 0x17u,
+    ENV = 0x73u
 };
 
 enum BitPlace {
@@ -58,7 +59,7 @@ typedef struct instruction {
     unsigned int rs2;
     unsigned int funct7;
     int immediate;
-    char instr[6]; 
+    char instr[7]; 
     char* assemblyStr;
 } instruction;
 

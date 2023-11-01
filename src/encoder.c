@@ -11,6 +11,7 @@ enum ErrorType {
     ERR_INSTR_B,
     ERR_INSTR_J,
     ERR_INSTR_U,
+    ERR_INSTR_ENV,
     ERR_REGISTER_OVERFLOW,
     ERR_IMM_OVERFLOW,
     ERR_RD_X0
@@ -45,6 +46,9 @@ void printEncodeError(instruction* i, const enum ErrorType err) {
         break;
     case ERR_INSTR_U:
         fprintf(stderr, "Invalid U-type instruction\nUsage: instr rd imm\n");
+        break;
+    case ERR_INSTR_ENV:
+        fprintf(stderr, "Invalid Environment instruction\nUsage: instr\n");
         break;
     case ERR_REGISTER_OVERFLOW:
         fprintf(stderr, "Invalid register\n");
@@ -91,7 +95,9 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "beq", 3) == 0 ||
         strncmp(s, "jal", 3) == 0 ||
         strncmp(s, "lui", 3) == 0 ||
-        strncmp(s,"auipc",5) == 0) {
+        strncmp(s,"auipc",5) == 0 ||
+        strncmp(s,"ecall",4) == 0 ||
+        strncmp(s,"ebreak",6) == 0) {
         return true;
     }
     return false;
@@ -102,7 +108,15 @@ void obtainOpcode(instruction* i, const char* str) {
         return;
     }
     char* s = convertToLower(str);
-    if (strncmp(s, "auipc", 5) == 0) {
+    if (strncmp(s, "ebreak", 6) == 0) {
+        strcpy(i->instr, "ebreak");
+        i->opcode = ENV;
+        return;
+    } else if (strncmp(s, "ecall", 5) == 0) {
+        strcpy(i->instr, "ecall");
+        i->opcode = ENV;
+        return;
+    } else if (strncmp(s, "auipc", 5) == 0) {
         strcpy(i->instr, "auipc");
         i->opcode = AUIPC;
         return;
@@ -182,7 +196,7 @@ void obtainArguments(instruction* i, const char* str) {
     }
     char* s = convertToLower(str);
     i->assemblyStr = NULL;
-    char instr[6] = "";
+    char instr[7] = "";
     char rs1[4] = "";
     char rs2[4] = "";
     char rd[4] = "";
@@ -384,6 +398,24 @@ void obtainArguments(instruction* i, const char* str) {
             return;
         }
         break;
+    case ENV:
+        // instr
+        if (sscanf(s, "%7s", instr) != 1) {
+            printEncodeError(i, ERR_INSTR_ENV);
+            return;  
+        }
+        if (strlen(instr) > 7) {
+            printEncodeError(i, ERR_INSTR_ENV);
+            return;
+        } 
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        i->rs1 = 0x0;
+        i->rd = 0x0;
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        break;
     default:
         break;
     }
@@ -410,6 +442,15 @@ void obtainFunct7(instruction* i) {
             i->funct7 = 0x20;
         } 
         break;
+    case ENV:
+        if (strncmp(i->instr, "ecall", 5) == 0) {
+            i->immediate = 0x0;
+        } else if (strncmp(i->instr, "ebreak", 6) == 0) {
+            i->immediate = 0x1;
+        } else {
+            printEncodeError(i, ERR_INSTR_ENV);
+        }
+        break;
     default:
         break;
     }
@@ -422,7 +463,9 @@ void obtainFunct3(instruction* i) {
     if ((strncmp(i->instr, "add", 3) == 0) || 
         (strncmp(i->instr, "sub", 3) == 0) ||
         (strncmp(i->instr, "addi",4) == 0) ||
-        (strncmp(i->instr, "beq", 3) == 0)) {
+        (strncmp(i->instr, "beq", 3) == 0) ||
+        (strncmp(i->instr, "ecall", 5) == 0) ||
+        (strncmp(i->instr, "ebreak", 6) == 0)) {
         i->funct3 = 0x0;
     } else if ((strncmp(i->instr, "ld", 2) == 0) ||
                (strncmp(i->instr, "sd", 2) == 0)) {
@@ -461,6 +504,7 @@ void obtainInput(instruction* i) {
         break;
     case I_TYPE_IMM:
     case I_TYPE_LOAD:
+    case ENV:
         i->input = i->opcode | (i->rd << BIT_RD) |
             (i->funct3 << BIT_FUNCT3) |
             (i->rs1 << BIT_RS1) |

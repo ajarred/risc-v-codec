@@ -236,5 +236,25 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x00000073);
+    assert(strcmp(test->assemblyStr, "ecall") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("ecall");
+    assert(test->input == 0x00000073);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x00100073);
+    assert(strcmp(test->assemblyStr, "ebreak") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("ebreak");
+    assert(test->input == 0x00100073);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

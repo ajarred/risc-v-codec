@@ -5,6 +5,7 @@ enum ErrorType {
     ERR_FUNCT3,
     ERR_FUNCT7,
     ERR_X0_RD,
+    ERR_ENV
 };
 
 bool isHex(char* str) {
@@ -59,6 +60,12 @@ void printDecodeError(instruction* i, const enum ErrorType err) {
         printf("Funct3 = %x, ", i->funct3);            
         printf("Funct7 = %x\n", i->funct7);
         break;
+    case ERR_ENV:
+        fprintf(stderr, "Invalid environment instruction\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);            
+        printf("Immediate = %x, ", i->immediate);
+        break;
     default:
         break;
     }
@@ -78,6 +85,7 @@ void parseOpcode(instruction* i) {
     case I_TYPE_IMM:
     case S_TYPE:
     case B_TYPE:
+    case ENV:
         break;
     case J_TYPE:
         strcpy(i->instr, "jal");
@@ -166,7 +174,14 @@ void parseFunct3(instruction* i) {
             default:
                 i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
-                break;
+                return;
+        }
+        break;
+    case ENV:
+        i->funct3 = funct3;
+        if (i->funct3 != 0x0) {
+            printDecodeError(i, ERR_FUNCT3);
+            return;
         }
         break;
     case J_TYPE:
@@ -264,7 +279,7 @@ void parseFunct7(instruction* i) {
             break;
         default:
             printDecodeError(i, ERR_FUNCT7);
-            break;
+            return;
         }
 
         break;
@@ -275,6 +290,12 @@ void parseFunct7(instruction* i) {
         break;
     case B_TYPE:
         i->immediate = funct7;
+        break;
+    case ENV:
+        i->immediate = funct7 << IMM_UPPER;
+        if (i->immediate != 0x0) {
+            printDecodeError(i, ERR_ENV);
+        }
         break;
     case J_TYPE:
     case LUI:
@@ -319,6 +340,10 @@ void parseRd(instruction* i) {
                (((rd >> 1) & MASK_4BITS) << 1); 
         i->immediate = SIGNEX(temp, IMM13_MSB);
         break;
+    case ENV:
+        if (rd != 0x0) {
+            printDecodeError(i, ERR_ENV);
+        }
     default:
         break;
     }
@@ -338,6 +363,11 @@ void parseRs1(instruction* i) {
     case S_TYPE:
     case B_TYPE:
         i->rs1 = rs1;
+        break;
+    case ENV:
+        if (rs1 != 0x0) {
+            printDecodeError(i, ERR_ENV);
+        }
         break;
     case J_TYPE:
     case LUI:
@@ -382,6 +412,20 @@ void parseRs2(instruction* i)
         signedCheck = (i->input >> 12) & MASK_20BITS;
         i->immediate = SIGNEX(signedCheck, IMM20_MSB);
         break;
+    case ENV:
+        i->immediate = i->immediate | rs2;
+        switch (i->immediate) {
+        case 0x0:
+            strcpy(i->instr, "ecall");   
+            break;
+        case 0x1:
+            strcpy(i->instr, "ebreak");   
+            break;
+        default:
+            printDecodeError(i, ERR_ENV);
+            return;
+        }
+        break;
     default:
         break;
     }
@@ -419,7 +463,10 @@ void getAssemblyString(instruction* i) {
     case AUIPC:
         snprintf(tempString, sizeof(tempString), "%s x%d, %d",
                                i->instr, i->rd, i->immediate);     
-        break; 
+        break;
+    case ENV:
+        snprintf(tempString, sizeof(tempString), "%s", i->instr);     
+        break;  
     default:
         return;
     }
