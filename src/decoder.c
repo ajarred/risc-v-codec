@@ -82,6 +82,12 @@ void parseOpcode(instruction* i) {
     case J_TYPE:
         strcpy(i->instr, "jal");
         break;
+    case LUI:
+        strcpy(i->instr, "lui");
+        break;
+    case AUIPC: 
+        strcpy(i->instr, "auipc");
+        break;
     default:
         i->opcode = INVALID;
         printDecodeError(i, ERR_OPCODE);
@@ -164,6 +170,8 @@ void parseFunct3(instruction* i) {
         }
         break;
     case J_TYPE:
+    case LUI:
+    case AUIPC:
     default:
         break;
     }
@@ -269,6 +277,8 @@ void parseFunct7(instruction* i) {
         i->immediate = funct7;
         break;
     case J_TYPE:
+    case LUI:
+    case AUIPC:
     default:
         break;
     }
@@ -290,6 +300,8 @@ void parseRd(instruction* i) {
     case I_TYPE_IMM:     
     case I_TYPE_LOAD:
     case J_TYPE:
+    case LUI:
+    case AUIPC:
         i->rd = rd;
         if(rd == 0x0) {
             printDecodeError(i, ERR_X0_RD);
@@ -328,6 +340,8 @@ void parseRs1(instruction* i) {
         i->rs1 = rs1;
         break;
     case J_TYPE:
+    case LUI:
+    case AUIPC:
     default:
         break;
     }
@@ -363,6 +377,11 @@ void parseRs2(instruction* i)
                (((signedCheck >> 10) & MASK_10BITS) << 1); // 10:1
         i->immediate = SIGNEX(temp, IMM21_MSB);
         break;
+    case LUI:
+    case AUIPC:
+        signedCheck = (i->input >> 12) & MASK_20BITS;
+        i->immediate = SIGNEX(signedCheck, IMM20_MSB);
+        break;
     default:
         break;
     }
@@ -396,6 +415,8 @@ void getAssemblyString(instruction* i) {
                            i->instr, i->rs1, i->rs2, i->immediate);
         break;
     case J_TYPE:
+    case LUI:
+    case AUIPC:
         snprintf(tempString, sizeof(tempString), "%s x%d, %d",
                                i->instr, i->rd, i->immediate);     
         break; 

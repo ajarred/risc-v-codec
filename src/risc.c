@@ -85,6 +85,8 @@ void listAvailableInstructions() {
     "- beq\n"
     "J-Type Instructions: instr rd, imm\n"
     "- jal\n"
+    "U-Type Instructions: instr rd, imm\n"
+    "- lui, auipc\n"
     );
 }          
 
@@ -297,6 +299,36 @@ void runUnitTest() {
 
     test = createEncodedInstruction("jal x2, 1048574");
     assert(test->input == 0x7ffff16f);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x80000217);
+    assert(strcmp(test->assemblyStr, "auipc x4, -524288") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ffff217);
+    assert(strcmp(test->assemblyStr, "auipc x4, 524287") == 0);
+    free(test->assemblyStr);
+    free(test);  
+
+    test = createDecodedInstruction(0x7ffff637);
+    assert(strcmp(test->assemblyStr, "lui x12, 524287") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x80000637);
+    assert(strcmp(test->assemblyStr, "lui x12, -524288") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lui x12, -524288");
+    assert(test->input == 0x80000637);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("auipc x4, -524288");
+    assert(test->input == 0x80000217);
     free(test->assemblyStr);
     free(test);
 

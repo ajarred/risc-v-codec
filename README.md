@@ -22,4 +22,5 @@ After compilation, run the program with the following command:
 - S-Type: sd
 - B-Type: beq
 - J-Type: jal
+- U-Type: lui, auipc
 

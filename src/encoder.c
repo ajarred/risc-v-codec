@@ -8,6 +8,8 @@ enum ErrorType {
     ERR_INSTR_I_LOAD,
     ERR_INSTR_S,
     ERR_INSTR_B,
+    ERR_INSTR_J,
+    ERR_INSTR_U,
     ERR_REGISTER_OVERFLOW,
     ERR_IMM_OVERFLOW,
     ERR_RD_X0
@@ -36,6 +38,12 @@ void printEncodeError(instruction* i, const enum ErrorType err) {
         break;
     case ERR_INSTR_B:
         fprintf(stderr, "Invalid B-type instruction\nUsage: instr rs1, rs2, imm\n");
+        break;
+    case ERR_INSTR_J:
+        fprintf(stderr, "Invalid J-type instruction\nUsage: instr rd imm\n");
+        break;
+    case ERR_INSTR_U:
+        fprintf(stderr, "Invalid U-type instruction\nUsage: instr rd imm\n");
         break;
     case ERR_REGISTER_OVERFLOW:
         fprintf(stderr, "Invalid register\n");
@@ -66,7 +74,9 @@ bool isValidInstruction(const char* s) {
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
         strncmp(s, "beq", 3) == 0 ||
-        strncmp(s, "jal", 3) == 0) {
+        strncmp(s, "jal", 3) == 0 ||
+        strncmp(s, "lui", 3) == 0 ||
+        strncmp(s,"auipc",5) == 0) {
         return true;
     }
     return false;
@@ -76,13 +86,21 @@ void obtainOpcode(instruction* i, const char* s) {
     if (!isValidInstruction(s) || i == NULL || s == NULL || strlen(s) == 0) {
         return;
     }
-    if (strncmp(s, "addi",4) == 0) {
+    if (strncmp(s, "auipc", 5) == 0) {
+        strcpy(i->instr, "auipc");
+        i->opcode = AUIPC;
+        return;
+    } else if (strncmp(s, "addi", 4) == 0) {
         strcpy(i->instr, "addi");
         i->opcode = I_TYPE_IMM;
         return;
     } else if (strncmp(s, "sltu", 4) == 0) {
         strcpy(i->instr, "sltu");
         i->opcode = R_TYPE;
+        return;
+    } else if (strncmp(s, "lui", 3) == 0) {
+        strcpy(i->instr, "lui");
+        i->opcode = LUI;
         return;
     } else if (strncmp(s, "add", 3) == 0) {
         strcpy(i->instr, "add");
@@ -94,10 +112,6 @@ void obtainOpcode(instruction* i, const char* s) {
         return;
     } else if (strncmp(s, "xor", 3) == 0) {
         strcpy(i->instr, "xor");
-        i->opcode = R_TYPE;
-        return;
-    } else if (strncmp(s, "or", 2) == 0) {
-        strcpy(i->instr, "or");
         i->opcode = R_TYPE;
         return;
     } else if (strncmp(s, "and", 3) == 0) {
@@ -120,6 +134,14 @@ void obtainOpcode(instruction* i, const char* s) {
         strcpy(i->instr, "slt");
         i->opcode = R_TYPE;
         return;
+    } else if (strncmp(s, "beq", 3) == 0) {
+        strcpy(i->instr, "beq");
+        i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "jal", 3) == 0) {
+        strcpy(i->instr, "jal");
+        i->opcode = J_TYPE;
+        return;
     } else if (strncmp(s, "ld",  2) == 0) {
         strcpy(i->instr, "ld");
         i->opcode = I_TYPE_LOAD;
@@ -128,13 +150,9 @@ void obtainOpcode(instruction* i, const char* s) {
         strcpy(i->instr, "sd");
         i->opcode = S_TYPE;
         return;
-    } else if (strncmp(s, "beq", 3) == 0) {
-        strcpy(i->instr, "beq");
-        i->opcode = B_TYPE;
-        return;
-    } else if (strncmp(s, "jal", 3) == 0) {
-        strcpy(i->instr, "jal");
-        i->opcode = J_TYPE;
+    } else if (strncmp(s, "or", 2) == 0) {
+        strcpy(i->instr, "or");
+        i->opcode = R_TYPE;
         return;
     } else {
         printEncodeError(i, ERR_INSTR);
@@ -299,7 +317,7 @@ void obtainArguments(instruction* i, const char* s) {
     case J_TYPE:
         // instr rd, imm
         if (sscanf(s, "%5s x%3[^,], %8[-0-9]", instr, rd, imm) != 3) {
-            printEncodeError(i, ERR_INSTR_B);
+            printEncodeError(i, ERR_INSTR_U);
             return;  
         }
         if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(imm) > 8) {
@@ -322,6 +340,33 @@ void obtainArguments(instruction* i, const char* s) {
             return;
         }
         break;
+    case LUI:
+    case AUIPC:
+        // instr rd, imm
+        if (sscanf(s, "%5s x%3[^,], %8[-0-9]", instr, rd, imm) != 3) {
+            printEncodeError(i, ERR_INSTR_J);
+            return;  
+        }
+        if (strlen(instr) > 5 || strlen(rd) > 3 || strlen(imm) > 8) {
+            printEncodeError(i, ERR_BUFFER_OVERFLOW);
+            return;
+        } 
+        i->assemblyStr = (char*) malloc(strlen(s)+1);
+        if (i->assemblyStr == NULL) {
+            return;
+        }
+        strncpy(i->assemblyStr, s, strlen(s)+1);
+        i->rd = (unsigned int)strtoul(rd, NULL, 10);
+        i->immediate = (int)strtoul(imm, NULL, 10);
+        if (i->rd > 31) {
+            printEncodeError(i, ERR_REGISTER_OVERFLOW);
+            return;
+        }
+        if (i->immediate < -524288 || i->immediate > 524287) {
+            printEncodeError(i, ERR_IMM_OVERFLOW);
+            return;
+        }
+        break;
     default:
         break;
     }
@@ -333,9 +378,9 @@ void obtainFunct7(instruction* i) {
     }
     switch(i->opcode) {
     case R_TYPE:
-        if (strncmp(i->instr, "add", 3) == 0 ||
+        if (strncmp(i->instr, "or",  2) == 0 ||
+            strncmp(i->instr, "add", 3) == 0 ||
             strncmp(i->instr, "xor", 3) == 0 ||
-            strncmp(i->instr, "or",  2) == 0 ||
             strncmp(i->instr, "and", 3) == 0 ||
             strncmp(i->instr, "sll", 3) == 0 ||
             strncmp(i->instr, "srl", 3) == 0 ||
@@ -348,11 +393,6 @@ void obtainFunct7(instruction* i) {
             i->funct7 = 0x20;
         } 
         break;
-    case I_TYPE_IMM:
-    case I_TYPE_LOAD:
-    case S_TYPE:
-    case B_TYPE:
-    case J_TYPE:
     default:
         break;
     }
@@ -387,52 +427,6 @@ void obtainFunct3(instruction* i) {
         i->funct3 = 0x2;
     } 
 }
-
-/*
-void obtainOpcode(instruction* i) {
-    if (i == NULL || i->opcode == INVALID) {
-        return;
-    }
-    switch(i->opcode) {
-    case R_TYPE:
-        if ((strncmp(i->instr, "add", 3) == 0) || 
-        (strncmp(i->instr, "sub", 3) == 0) ||
-        (strncmp(i->instr, "xor", 3) == 0) ||
-        (strncmp(i->instr, "or", 2)  == 0) ||
-        (strncmp(i->instr, "and", 3) == 0) ||
-        (strncmp(i->instr, "sll", 3) == 0) ||
-        (strncmp(i->instr, "srl", 3) == 0) ||
-        (strncmp(i->instr, "sra", 3) == 0) ||
-        (strncmp(i->instr, "slt", 3) == 0) ||
-        (strncmp(i->instr, "sltu", 3) == 0)) {
-            i->opcode = R_TYPE;
-        }
-        break;
-    case I_TYPE_IMM:
-        if (strncmp(i->instr, "addi", 4) == 0) {
-            i->opcode = I_TYPE_IMM;
-        }
-        break;
-    case I_TYPE_LOAD:
-        if (strncmp(i->instr, "ld", 2) == 0) {
-            i->opcode = I_TYPE_LOAD;
-        }
-        break;
-    case S_TYPE:
-        if (strncmp(i->instr, "sd", 2) == 0) {
-            i->opcode = S_TYPE;
-        }
-        break;
-    case B_TYPE:
-        if (strncmp(i->instr, "beq", 2) == 0) {
-            i->opcode = B_TYPE;
-        }
-        break; 
-    default:
-        break;
-    }
-}
-*/
 
 void obtainInput(instruction* i) {
     if (i == NULL || i->opcode == INVALID) {
@@ -485,6 +479,11 @@ void obtainInput(instruction* i) {
                    (i->rd << BIT_RD) |
                    i->opcode;
         break;
+    case LUI:
+    case AUIPC:
+        i->input = (i->immediate << BIT_FUNCT3) | 
+                   (i->rd << BIT_RD) | i->opcode;
+        break;
     default:
         break;
     }
@@ -496,7 +495,6 @@ instruction* createEncodedInstruction(const char* s) {
     obtainArguments(i, s);
     obtainFunct7(i);
     obtainFunct3(i);
-    // obtainOpcode(i);
     obtainInput(i);
     if (i->opcode == INVALID) {
         return NULL;

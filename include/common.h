@@ -14,7 +14,9 @@ enum Opcode {
     I_TYPE_LOAD = 0x3u,
     S_TYPE = 0x23u,
     B_TYPE = 0x63u,
-    J_TYPE = 0x6fu
+    J_TYPE = 0x6fu,
+    LUI = 0x37u,
+    AUIPC = 0x17u
 };
 
 enum BitPlace {
@@ -43,7 +45,8 @@ enum Imm {
     IMM_UPPER = 5, 
     IMM12_MSB = 11,
     IMM13_MSB = 12,
-    IMM21_MSB = 20
+    IMM20_MSB = 19,
+    IMM21_MSB = 20,
 };
 
 typedef struct instruction {
