@@ -3,7 +3,7 @@
 
 #include "../include/common.h"
 
-bool isValidInstruction(const char* s);
+bool isValidInstruction(const char* str);
 
 void obtainInput(instruction* i);
 

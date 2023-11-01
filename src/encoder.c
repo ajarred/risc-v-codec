@@ -1,4 +1,5 @@
 #include "../include/encoder.h"
+#include <ctype.h>
 
 enum ErrorType {
     ERR_BUFFER_OVERFLOW,
@@ -59,7 +60,21 @@ void printEncodeError(instruction* i, const enum ErrorType err) {
     }
 }
 
-bool isValidInstruction(const char* s) {
+char* convertToLower(const char *str) {
+    int length = strlen(str);
+    char *lowercaseStr = (char*)malloc(length + 1);
+    if (lowercaseStr == NULL) {
+        return NULL;
+    }
+    for (int i = 0; i < length; i++) {
+        lowercaseStr[i] = tolower((unsigned char)str[i]);
+    }
+    lowercaseStr[length] = '\0';
+    return lowercaseStr;
+}
+
+bool isValidInstruction(const char* str) {
+    char* s = convertToLower(str);
     if (strncmp(s, "add", 3) == 0 ||
         strncmp(s, "sub", 3) == 0 ||
         strncmp(s, "xor", 3) == 0 ||
@@ -82,10 +97,11 @@ bool isValidInstruction(const char* s) {
     return false;
 }
 
-void obtainOpcode(instruction* i, const char* s) {
-    if (!isValidInstruction(s) || i == NULL || s == NULL || strlen(s) == 0) {
+void obtainOpcode(instruction* i, const char* str) {
+    if (!isValidInstruction(str) || i == NULL || str == NULL || strlen(str) == 0) {
         return;
     }
+    char* s = convertToLower(str);
     if (strncmp(s, "auipc", 5) == 0) {
         strcpy(i->instr, "auipc");
         i->opcode = AUIPC;
@@ -160,10 +176,11 @@ void obtainOpcode(instruction* i, const char* s) {
     }
 }
 
-void obtainArguments(instruction* i, const char* s) {
-    if (i == NULL || i->opcode == INVALID || s == NULL || strlen(s) == 0) {
+void obtainArguments(instruction* i, const char* str) {
+    if (i == NULL || i->opcode == INVALID || str == NULL || strlen(str) == 0) {
         return;
     }
+    char* s = convertToLower(str);
     i->assemblyStr = NULL;
     char instr[6] = "";
     char rs1[4] = "";
