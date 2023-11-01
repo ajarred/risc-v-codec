@@ -81,7 +81,7 @@ void listAvailableInstructions() {
     "S-Type Instructions: instr rs2, imm(rs1)\n"
     "- sd\n"
     "B-Type Instructions: instr rs1, rs2, imm\n"
-    "- beq\n"
+    "- beq, bne, blt, bge, bltu, bgeu\n"
     "J-Type Instructions: instr rd, imm\n"
     "- jal\n"
     "Jump Immediate Instructions: instr rd, imm\n"

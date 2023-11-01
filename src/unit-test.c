@@ -336,5 +336,55 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x80619063);
+    assert(strcmp(test->assemblyStr, "bne x3, x6, -4096") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("bne x3, x6, -4096");
+    assert(test->input == 0x80619063);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x80994063);
+    assert(strcmp(test->assemblyStr, "blt x18, x9, -4096") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("blt x18, x9, -4096");
+    assert(test->input == 0x80994063);
+    free(test->assemblyStr);
+    free(test);   
+
+    test = createDecodedInstruction(0x8070d063);
+    assert(strcmp(test->assemblyStr, "bge x1, x7, -4096") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("bge x1, x7, -4096");
+    assert(test->input == 0x8070d063);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x8119e063);
+    assert(strcmp(test->assemblyStr, "bltu x19, x17, -4096") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("bltu x19, x17, -4096");
+    assert(test->input == 0x8119e063);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x81eef063);
+    assert(strcmp(test->assemblyStr, "bgeu x29, x30, -4096") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("bgeu x29, x30, -4096");
+    assert(test->input == 0x81eef063);
+    free(test->assemblyStr);
+    free(test); 
+
     printf("\nPassed all tests\n");
 }

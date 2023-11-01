@@ -20,7 +20,7 @@ After compilation, run the program with the following command:
 - R-Type: add, sub, xor, and, sll, srl, sra, slt, sltu
 - I-Type: addi, xori, andi, ori, ld, jalr, ecall, ebreak
 - S-Type: sd
-- B-Type: beq
+- B-Type: beq, bne, blt, bge, bltu, bgeu
 - J-Type: jal
 - U-Type: lui, auipc
 

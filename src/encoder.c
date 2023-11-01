@@ -96,6 +96,11 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
         strncmp(s, "beq", 3) == 0 ||
+        strncmp(s, "bne", 3) == 0 ||
+        strncmp(s, "blt", 3) == 0 ||
+        strncmp(s, "bge", 3) == 0 ||
+        strncmp(s, "bgeu",4) == 0 ||
+        strncmp(s, "bltu",4) == 0 ||
         strncmp(s, "jal", 3) == 0 ||
         strncmp(s,"jalr", 4) == 0 ||
         strncmp(s, "lui", 3) == 0 ||
@@ -143,6 +148,26 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "andi", 4) == 0) {
         strcpy(i->instr, "andi");
         i->opcode = I_TYPE_IMM;
+        return;
+    } else if (strncmp(s, "bgeu", 4) == 0) {
+        strcpy(i->instr, "bgeu");
+        i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "bltu", 4) == 0) {
+        strcpy(i->instr, "bltu");
+        i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "blt", 3) == 0) {
+        strcpy(i->instr, "blt");
+        i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "bne", 3) == 0) {
+        strcpy(i->instr, "bne");
+        i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "bge", 3) == 0) {
+        strcpy(i->instr, "bge");
+        i->opcode = B_TYPE;
         return;
     } else if (strncmp(s, "lui", 3) == 0) {
         strcpy(i->instr, "lui");
@@ -493,19 +518,24 @@ void obtainFunct3(instruction* i) {
     } else if ((strncmp(i->instr, "ld", 2) == 0) ||
                (strncmp(i->instr, "sd", 2) == 0)) {
         i->funct3 = 0x3;
-    } else if (strncmp(i->instr, "xor", 3) == 0 ||
-              (strncmp(i->instr, "xori", 4)== 0)) {
-        i->funct3 = 0x4;
     } else if (strncmp(i->instr, "or", 2) == 0 ||
-              (strncmp(i->instr, "ori", 3)== 0)) {
+              (strncmp(i->instr, "ori", 3)== 0)||
+              (strncmp(i->instr, "bltu",4) == 0)) {
         i->funct3 = 0x6;
+    } else if (strncmp(i->instr, "xor", 3) == 0 ||
+              (strncmp(i->instr, "xori", 4)== 0)||
+              (strncmp(i->instr, "blt", 3) == 0)) {
+        i->funct3 = 0x4;
     } else if (strncmp(i->instr, "and", 3) == 0 || 
-              (strncmp(i->instr, "andi", 4)== 0)) {
+              (strncmp(i->instr, "andi", 4)== 0)||
+              (strncmp(i->instr, "bgeu", 4)== 0)) {
         i->funct3 = 0x7;
-    } else if (strncmp(i->instr, "sll", 3) == 0) {
+    } else if (strncmp(i->instr, "sll", 3) == 0 ||
+              (strncmp(i->instr, "bne", 3) == 0)) {
         i->funct3 = 0x1;
     } else if ((strncmp(i->instr, "srl", 3) == 0) ||
-               (strncmp(i->instr, "sra", 3) == 0)) {
+               (strncmp(i->instr, "sra", 3) == 0) ||
+               (strncmp(i->instr, "bge", 3) == 0)) {
         i->funct3 = 0x5;
     } else if (strncmp(i->instr, "sltu", 4) == 0) {
         i->funct3 = 0x3;

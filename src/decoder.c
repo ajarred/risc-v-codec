@@ -186,6 +186,26 @@ void parseFunct3(instruction* i) {
                 i->funct3 = funct3;
                 strcpy(i->instr, "beq");
                 break;
+            case 0x1:
+                i->funct3 = funct3;
+                strcpy(i->instr, "bne");
+                break;
+            case 0x4:
+                i->funct3 = funct3;
+                strcpy(i->instr, "blt");
+                break;
+            case 0x5:
+                i->funct3 = funct3;
+                strcpy(i->instr, "bge");
+                break;
+            case 0x6:
+                i->funct3 = funct3;
+                strcpy(i->instr, "bltu");
+                break;
+            case 0x7:
+                i->funct3 = funct3;
+                strcpy(i->instr, "bgeu");
+                break;
             default:
                 i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
