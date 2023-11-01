@@ -1,6 +1,7 @@
 #include "../include/decoder.h"
 #include "../include/encoder.h"
 #include "../include/unit-test.h"
+#include <assert.h>
 
 void runUnitTest() {
     printf("Running tests...\n\n");
