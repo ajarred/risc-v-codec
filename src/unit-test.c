@@ -276,5 +276,65 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x80094893);
+    assert(strcmp(test->assemblyStr, "xori x17, x18, -2048") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("xori x17, x18, -2048");
+    assert(test->input == 0x80094893);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff94893);
+    assert(strcmp(test->assemblyStr, "xori x17, x18, 2047") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("xori x17, x18, 2047");
+    assert(test->input == 0x7ff94893);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x80096893);
+    assert(strcmp(test->assemblyStr, "ori x17, x18, -2048") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("ori x17, x18, -2048");
+    assert(test->input == 0x80096893);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff96893);
+    assert(strcmp(test->assemblyStr, "ori x17, x18, 2047") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("ori x17, x18, 2047");
+    assert(test->input == 0x7ff96893);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x80087413);
+    assert(strcmp(test->assemblyStr, "andi x8, x16, -2048") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("andi x8, x16, -2048");
+    assert(test->input == 0x80087413);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff87413);
+    assert(strcmp(test->assemblyStr, "andi x8, x16, 2047") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("andi x8, x16, 2047");
+    assert(test->input == 0x7ff87413);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

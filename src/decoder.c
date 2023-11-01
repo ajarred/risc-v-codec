@@ -138,6 +138,18 @@ void parseFunct3(instruction* i) {
                 i->funct3 = funct3;
                 strcpy(i->instr, "addi");
                 break;
+            case 0x4:
+                i->funct3 = funct3;
+                strcpy(i->instr, "xori");
+                break;
+            case 0x6:
+                i->funct3 = funct3;
+                strcpy(i->instr, "ori");
+                break;
+            case 0x7:
+                i->funct3 = funct3;
+                strcpy(i->instr, "andi");
+                break;
             default:
                 i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
