@@ -745,7 +745,6 @@ bool encodeInstruction(const char* s) {
         return false;
     }
     printf("0x%x\n", i->input);
-    printAllParts(i);
     free(i->assemblyStr);
     free(i);
     return true;
