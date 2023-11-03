@@ -18,7 +18,7 @@ After compilation, run the program with the following command:
 ```
 ## Current Instruction List
 - R-Type: add, sub, xor, and, sll, srl, sra, slt, sltu
-- I-Type: addi, xori, andi, ori, slli, srli, srai, ld, jalr, ecall, ebreak
+- I-Type: addi, xori, andi, ori, slli, srli, srai, slti, sltiu, ld, jalr, ecall, ebreak
 - S-Type: sd
 - B-Type: beq, bne, blt, bge, bltu, bgeu
 - J-Type: jal

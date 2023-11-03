@@ -84,6 +84,8 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "xor", 3) == 0 ||
         strncmp(s, "or",  2) == 0 ||
         strncmp(s, "and", 3) == 0 ||
+        strncmp(s, "sltiu",5)== 0 ||
+        strncmp(s, "slti",4) == 0 ||
         strncmp(s, "slli",4) == 0 ||
         strncmp(s, "srli",4) == 0 ||
         strncmp(s, "srai",4) == 0 ||
@@ -131,6 +133,14 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "auipc", 5) == 0) {
         strcpy(i->instr, "auipc");
         i->opcode = AUIPC;
+        return;
+    } else if (strncmp(s, "sltiu", 5) == 0) {
+        strcpy(i->instr, "sltiu");
+        i->opcode = I_TYPE_IMM;
+        return;
+    } else if (strncmp(s, "slti", 4) == 0) {
+        strcpy(i->instr, "slti");
+        i->opcode = I_TYPE_IMM;
         return;
     } else if (strncmp(s, "addi", 4) == 0) {
         strcpy(i->instr, "addi");
@@ -562,9 +572,11 @@ void obtainFunct3(instruction* i) {
                strncmp(i->instr, "sra", 3) == 0 ||
                strncmp(i->instr, "bge", 3) == 0) {
         i->funct3 = 0x5;
-    } else if (strncmp(i->instr, "sltu", 4) == 0) {
+    } else if (strncmp(i->instr, "sltu", 4) == 0 ||
+               strncmp(i->instr, "sltiu",5) == 0) {
         i->funct3 = 0x3;
-    } else if (strncmp(i->instr, "slt", 3) == 0) {
+    } else if (strncmp(i->instr, "slt", 3) == 0 || 
+               strncmp(i->instr, "slti",4) == 0) {
         i->funct3 = 0x2;
     } 
 }

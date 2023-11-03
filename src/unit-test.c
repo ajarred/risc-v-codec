@@ -416,5 +416,45 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);  
 
+    test = createDecodedInstruction(0x8003a093);
+    assert(strcmp(test->assemblyStr, "slti x1, x7, -2048") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("slti x1, x7, -2048");
+    assert(test->input == 0x8003a093);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff3a093);
+    assert(strcmp(test->assemblyStr, "slti x1, x7, 2047") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("slti x1, x7, 2047");
+    assert(test->input == 0x7ff3a093);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x8003b093);
+    assert(strcmp(test->assemblyStr, "sltiu x1, x7, -2048") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sltiu x1, x7, -2048");
+    assert(test->input == 0x8003b093);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff3b093);
+    assert(strcmp(test->assemblyStr, "sltiu x1, x7, 2047") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sltiu x1, x7, 2047");
+    assert(test->input == 0x7ff3b093);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

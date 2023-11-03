@@ -148,6 +148,12 @@ void parseFunct3(instruction* i) {
             case 0x1:
                 strcpy(i->instr, "slli");
                 break;
+            case 0x2:
+                strcpy(i->instr, "slti");
+                break;
+            case 0x3:
+                strcpy(i->instr, "sltiu");
+                break;
             case 0x4:
                 strcpy(i->instr, "xori");
                 break;
