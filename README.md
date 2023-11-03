@@ -20,7 +20,7 @@ After compilation, run the program with the following command:
 ### RV32I:
 - R-Type: add, sub, xor, and, sll, srl, sra, slt, sltu
 - I-Type: addi, xori, andi, ori, slli, srli, srai, slti, sltiu, jalr, ecall, ebreak
-- S-Type: 
+- S-Type: sb, sh, sw
 - B-Type: beq, bne, blt, bge, bltu, bgeu
 - J-Type: jal
 - U-Type: lui, auipc

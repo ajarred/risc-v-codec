@@ -556,5 +556,65 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x81df0023);
+    assert(strcmp(test->assemblyStr, "sb x29, -2048(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sb x29, -2048(x30)");
+    assert(test->input == 0x81df0023);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7fdf0fa3);
+    assert(strcmp(test->assemblyStr, "sb x29, 2047(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sb x29, 2047(x30)");
+    assert(test->input == 0x7fdf0fa3);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x81df1023);
+    assert(strcmp(test->assemblyStr, "sh x29, -2048(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sh x29, -2048(x30)");
+    assert(test->input == 0x81df1023);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7fdf1fa3);
+    assert(strcmp(test->assemblyStr, "sh x29, 2047(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sh x29, 2047(x30)");
+    assert(test->input == 0x7fdf1fa3);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x81df2023);
+    assert(strcmp(test->assemblyStr, "sw x29, -2048(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sw x29, -2048(x30)");
+    assert(test->input == 0x81df2023);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7fdf2fa3);
+    assert(strcmp(test->assemblyStr, "sw x29, 2047(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("sw x29, 2047(x30)");
+    assert(test->input == 0x7fdf2fa3);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

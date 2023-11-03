@@ -79,7 +79,7 @@ void listAvailableInstructions() {
     "I-Type Load Instructions: instr rd, imm(rs1)\n"
     "- lb, lh, lw, lbu, lhu, ld\n"
     "S-Type Instructions: instr rs2, imm(rs1)\n"
-    "- sd\n"
+    "- sb, sh, sw, sd\n"
     "B-Type Instructions: instr rs1, rs2, imm\n"
     "- beq, bne, blt, bge, bltu, bgeu\n"
     "J-Type Instructions: instr rd, imm\n"

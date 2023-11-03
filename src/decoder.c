@@ -197,12 +197,21 @@ void parseFunct3(instruction* i) {
         break;
     case S_TYPE:
         switch(funct3) {
-            case 0x3:
-                strcpy(i->instr, "sd");
-                break; 
-            default:
-                printDecodeError(i, ERR_FUNCT3);
-                return;
+        case 0x0:
+            strcpy(i->instr, "sb");
+            break;
+        case 0x1:
+            strcpy(i->instr, "sh");
+            break;
+        case 0x2:
+            strcpy(i->instr, "sw");
+            break;
+        case 0x3:
+            strcpy(i->instr, "sd");
+            break; 
+        default:
+            printDecodeError(i, ERR_FUNCT3);
+            return;
         }
         break;
     case B_TYPE:

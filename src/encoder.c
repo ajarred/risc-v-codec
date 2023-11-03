@@ -104,6 +104,9 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "lh",  2) == 0 ||
         strncmp(s, "lb",  2) == 0 ||
         strncmp(s, "ld",  2) == 0 || 
+        strncmp(s, "sb",  2) == 0 ||
+        strncmp(s, "sh",  2) == 0 ||
+        strncmp(s, "sw",  2) == 0 ||
         strncmp(s, "sd",  2) == 0 ||
         strncmp(s, "beq", 3) == 0 ||
         strncmp(s, "bne", 3) == 0 ||
@@ -270,6 +273,18 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "ld",  2) == 0) {
         strcpy(i->instr, "ld");
         i->opcode = I_TYPE_LOAD;
+        return;
+    } else if (strncmp(s, "sb",  2) == 0) {
+        strcpy(i->instr, "sb");
+        i->opcode = S_TYPE;
+        return;
+    } else if (strncmp(s, "sh",  2) == 0) {
+        strcpy(i->instr, "sh");
+        i->opcode = S_TYPE;
+        return;
+    } else if (strncmp(s, "sw",  2) == 0) {
+        strcpy(i->instr, "sw");
+        i->opcode = S_TYPE;
         return;
     } else if (strncmp(s, "sd",  2) == 0) {
         strcpy(i->instr, "sd");
@@ -570,6 +585,7 @@ void obtainFunct3(instruction* i) {
         (strncmp(i->instr, "beq", 3) == 0) ||
         (strncmp(i->instr, "jalr",4) == 0) ||
         (strcmp(i->instr, "lb") == 0) ||
+        (strncmp(i->instr, "sb", 2) == 0) ||
         (strncmp(i->instr, "ecall", 5) == 0) ||
         (strncmp(i->instr, "ebreak", 6) == 0)) {
         i->funct3 = 0x0;
@@ -592,6 +608,7 @@ void obtainFunct3(instruction* i) {
     } else if (strncmp(i->instr, "slli",4) == 0 ||
                strcmp(i->instr, "lh")      == 0 ||
                strncmp(i->instr, "sll", 3) == 0 ||
+               (strncmp(i->instr, "sh", 2) == 0)||
                strncmp(i->instr, "bne", 3) == 0) {
         i->funct3 = 0x1;
     } else if (strncmp(i->instr, "srli",4) == 0 ||
@@ -606,6 +623,7 @@ void obtainFunct3(instruction* i) {
         i->funct3 = 0x3;
     } else if (strncmp(i->instr, "slt", 3) == 0 || 
                strncmp(i->instr, "lw",  2) == 0 ||
+               strncmp(i->instr, "sw",  2) == 0 ||
                strncmp(i->instr, "slti",4) == 0) {
         i->funct3 = 0x2;
     } 
