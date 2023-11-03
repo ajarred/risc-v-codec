@@ -386,5 +386,35 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test); 
 
+    test = createDecodedInstruction(0x01f01513);
+    assert(strcmp(test->assemblyStr, "slli x10, x0, 31") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("slli x10, x0, 31");
+    assert(test->input == 0x01f01513);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x01f05513);
+    assert(strcmp(test->assemblyStr, "srli x10, x0, 31") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("srli x10, x0, 31");
+    assert(test->input == 0x01f05513);
+    free(test->assemblyStr);
+    free(test); 
+
+    test = createDecodedInstruction(0x41f05513);
+    assert(strcmp(test->assemblyStr, "srai x10, x0, 31") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("srai x10, x0, 31");
+    assert(test->input == 0x41f05513);
+    free(test->assemblyStr);
+    free(test);  
+
     printf("\nPassed all tests\n");
 }

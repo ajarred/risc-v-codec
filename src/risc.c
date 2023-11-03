@@ -75,7 +75,7 @@ void listAvailableInstructions() {
     "R-Type Instructions: instr rd, rs1, rs2\n"
     "- add, sub, xor, and, sll, srl, sra, slt, sltu\n"
     "I-Type Immediate Instructions: instr rd, rs1, imm\n"
-    "- addi, xori, ori\n"
+    "- addi, xori, ori, andi, slli, srli, srai\n"
     "I-Type Load Instructions: instr rd, imm(rs1)\n"
     "- ld\n"
     "S-Type Instructions: instr rs2, imm(rs1)\n"

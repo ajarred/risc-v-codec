@@ -3,6 +3,7 @@
 enum ErrorType {
     ERR_OPCODE,
     ERR_FUNCT3,
+    ERR_IMM,
     ERR_FUNCT7,
     ERR_X0_RD,
     ERR_ENV
@@ -47,6 +48,12 @@ void printDecodeError(instruction* i, const enum ErrorType err) {
         fprintf(stderr, "Invalid funct3\n");
         printf("Opcode = %x, ", i->opcode);
         printf("Funct3 = %x\n", i->funct3);
+        break;
+    case ERR_IMM:
+        fprintf(stderr, "Invalid immediate\n");
+        printf("Opcode = %x, ", i->opcode);
+        printf("Funct3 = %x, ", i->funct3);
+        printf("Immediate = %x\n", i->immediate);
         break;
     case ERR_FUNCT7:
         fprintf(stderr, "Invalid funct7\n");
@@ -113,6 +120,7 @@ void parseFunct3(instruction* i) {
     }
     unsigned int mask = MASK_3BITS << BIT_FUNCT3; 
     unsigned int funct3 = (mask & i->input) >> BIT_FUNCT3;
+    i->funct3 = funct3;
     switch(i->opcode) {
     case R_TYPE:
         switch(funct3) {
@@ -133,25 +141,25 @@ void parseFunct3(instruction* i) {
         }
         break;
     case I_TYPE_IMM:
-        switch(funct3) {
+        switch(i->funct3) {
             case 0x0:
-                i->funct3 = funct3;
                 strcpy(i->instr, "addi");
                 break;
+            case 0x1:
+                strcpy(i->instr, "slli");
+                break;
             case 0x4:
-                i->funct3 = funct3;
                 strcpy(i->instr, "xori");
                 break;
+            case 0x5:
+                break;
             case 0x6:
-                i->funct3 = funct3;
                 strcpy(i->instr, "ori");
                 break;
             case 0x7:
-                i->funct3 = funct3;
                 strcpy(i->instr, "andi");
                 break;
             default:
-                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
@@ -159,11 +167,9 @@ void parseFunct3(instruction* i) {
     case I_TYPE_LOAD:
         switch(funct3) {
             case 0x3:
-                i->funct3 = funct3;
                 strcpy(i->instr, "ld");
                 break;
             default:
-                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
@@ -171,50 +177,40 @@ void parseFunct3(instruction* i) {
     case S_TYPE:
         switch(funct3) {
             case 0x3:
-                i->funct3 = funct3;
                 strcpy(i->instr, "sd");
                 break; 
             default:
-                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case B_TYPE:
-        switch(funct3) {
+        switch(i->funct3) {
             case 0x0:
-                i->funct3 = funct3;
                 strcpy(i->instr, "beq");
                 break;
             case 0x1:
-                i->funct3 = funct3;
                 strcpy(i->instr, "bne");
                 break;
             case 0x4:
-                i->funct3 = funct3;
                 strcpy(i->instr, "blt");
                 break;
             case 0x5:
-                i->funct3 = funct3;
                 strcpy(i->instr, "bge");
                 break;
             case 0x6:
-                i->funct3 = funct3;
                 strcpy(i->instr, "bltu");
                 break;
             case 0x7:
-                i->funct3 = funct3;
                 strcpy(i->instr, "bgeu");
                 break;
             default:
-                i->funct3 = funct3;
                 printDecodeError(i, ERR_FUNCT3);
                 return;
         }
         break;
     case JALR:
     case ENV:
-        i->funct3 = funct3;
         if (i->funct3 != 0x0) {
             printDecodeError(i, ERR_FUNCT3);
             return;
@@ -237,10 +233,6 @@ void parseFunct7(instruction* i) {
     unsigned int funct7 = (mask & i->input) >> BIT_FUNCT7;
     switch (i->opcode) {
     case R_TYPE:
-        if (funct7 != 0x0 && funct7 != 0x20) {
-            printDecodeError(i, ERR_FUNCT7);
-            return;
-        }
         i->funct7 = funct7;
         switch (i->funct3) {
         case 0x0:
@@ -320,6 +312,33 @@ void parseFunct7(instruction* i) {
 
         break;
     case I_TYPE_IMM:
+        switch (i->funct3) {
+        case 0x1:
+            i->funct7 = funct7;
+            if (i->funct7 != 0x0) {
+                printDecodeError(i, ERR_IMM);
+                return;
+            }
+            break;
+        case 0x5:
+            i->funct7 = funct7;
+            switch (i->funct7 = funct7) {
+            case 0x0:
+                strcpy(i->instr, "srli");
+                break;
+            case 0x20:
+                strcpy(i->instr, "srai");
+                break;
+            default:
+                printDecodeError(i, ERR_IMM);
+                return;
+            }
+            break;
+        default:
+            i->immediate = (funct7 << IMM_UPPER);
+            break;
+        }
+        break;
     case I_TYPE_LOAD:
     case S_TYPE:
     case JALR:
@@ -432,6 +451,17 @@ void parseRs2(instruction* i)
         i->rs2 = rs2;
         break;
     case I_TYPE_IMM:
+        switch (i->funct3) {
+            case 0x1:
+            case 0x5:
+                i->immediate = rs2;
+                break;
+            default:
+                signedCheck = ((i->immediate) | rs2);
+                i->immediate = SIGNEX(signedCheck, IMM12_MSB);
+                break;
+        }
+        break;
     case I_TYPE_LOAD:
     case JALR:
         signedCheck = ((i->immediate) | rs2);

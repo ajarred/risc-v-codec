@@ -84,6 +84,9 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "xor", 3) == 0 ||
         strncmp(s, "or",  2) == 0 ||
         strncmp(s, "and", 3) == 0 ||
+        strncmp(s, "slli",4) == 0 ||
+        strncmp(s, "srli",4) == 0 ||
+        strncmp(s, "srai",4) == 0 ||
         strncmp(s, "sll", 3) == 0 ||
         strncmp(s, "srl", 3) == 0 ||
         strncmp(s, "sra", 3) == 0 ||
@@ -137,12 +140,20 @@ void obtainOpcode(instruction* i, const char* str) {
         strcpy(i->instr, "sltu");
         i->opcode = R_TYPE;
         return;
-    } else if (strncmp(s, "xori", 4) == 0) {
-        strcpy(i->instr, "xori");
+    } else if (strncmp(s, "slli", 4) == 0) {
+        strcpy(i->instr, "slli");
         i->opcode = I_TYPE_IMM;
         return;
-    } else if (strncmp(s, "ori", 3) == 0) {
-        strcpy(i->instr, "ori");
+    } else if (strncmp(s, "srli", 4) == 0) {
+        strcpy(i->instr, "srli");
+        i->opcode = I_TYPE_IMM;
+        return;
+    } else if (strncmp(s, "srai", 4) == 0) {
+        strcpy(i->instr, "srai");
+        i->opcode = I_TYPE_IMM;
+        return;
+    } else if (strncmp(s, "xori", 4) == 0) {
+        strcpy(i->instr, "xori");
         i->opcode = I_TYPE_IMM;
         return;
     } else if (strncmp(s, "andi", 4) == 0) {
@@ -156,6 +167,14 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "bltu", 4) == 0) {
         strcpy(i->instr, "bltu");
         i->opcode = B_TYPE;
+        return;
+    } else if (strncmp(s, "jalr", 4) == 0) {
+        strcpy(i->instr, "jalr");
+        i->opcode = JALR;
+        return;
+    } else if (strncmp(s, "ori", 3) == 0) {
+        strcpy(i->instr, "ori");
+        i->opcode = I_TYPE_IMM;
         return;
     } else if (strncmp(s, "blt", 3) == 0) {
         strcpy(i->instr, "blt");
@@ -208,11 +227,6 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "beq", 3) == 0) {
         strcpy(i->instr, "beq");
         i->opcode = B_TYPE;
-        return;
-    } 
-    else if (strncmp(s, "jalr", 4) == 0) {
-        strcpy(i->instr, "jalr");
-        i->opcode = JALR;
         return;
     } else if (strncmp(s, "jal", 3) == 0) {
         strcpy(i->instr, "jal");
@@ -300,6 +314,14 @@ void obtainArguments(instruction* i, const char* str) {
         if (i->rd == 0x0) {
             printEncodeError(i, ERR_RD_X0);
             return;
+        }
+        if (strncmp(i->instr, "slli", 4) == 0 || 
+            strncmp(i->instr, "srli", 4) == 0 ||
+            strncmp(i->instr, "srai", 4) == 0) {
+            if (i->immediate < 0 || i->immediate > 31) {
+                printEncodeError(i, ERR_IMM_OVERFLOW);
+                return;  
+            }
         }
         if (i->immediate < -2048 || i->immediate > 2047) {
             printEncodeError(i, ERR_IMM_OVERFLOW);
@@ -530,12 +552,15 @@ void obtainFunct3(instruction* i) {
               (strncmp(i->instr, "andi", 4)== 0)||
               (strncmp(i->instr, "bgeu", 4)== 0)) {
         i->funct3 = 0x7;
-    } else if (strncmp(i->instr, "sll", 3) == 0 ||
-              (strncmp(i->instr, "bne", 3) == 0)) {
+    } else if (strncmp(i->instr, "slli",4) == 0 ||
+               strncmp(i->instr, "sll", 3) == 0 ||
+               strncmp(i->instr, "bne", 3) == 0) {
         i->funct3 = 0x1;
-    } else if ((strncmp(i->instr, "srl", 3) == 0) ||
-               (strncmp(i->instr, "sra", 3) == 0) ||
-               (strncmp(i->instr, "bge", 3) == 0)) {
+    } else if (strncmp(i->instr, "srli",4) == 0 ||
+               strncmp(i->instr, "srai",4) == 0 ||
+               strncmp(i->instr, "srl", 3) == 0 ||
+               strncmp(i->instr, "sra", 3) == 0 ||
+               strncmp(i->instr, "bge", 3) == 0) {
         i->funct3 = 0x5;
     } else if (strncmp(i->instr, "sltu", 4) == 0) {
         i->funct3 = 0x3;
@@ -559,6 +584,35 @@ void obtainInput(instruction* i) {
             (i->funct7 << BIT_FUNCT7);
         break;
     case I_TYPE_IMM:
+        switch (i->funct3) {
+        case 0x1:
+            i->input = i->opcode | (i->rd << BIT_RD) |
+            (i->funct3 << BIT_FUNCT3) |
+            (i->immediate << BIT_RS2); 
+            break;
+        case 0x5:
+            if (strncmp(i->instr, "srli", 4) == 0) {
+                i->input = i->opcode | (i->rd << BIT_RD) |
+                (i->funct3 << BIT_FUNCT3) |
+                (i->rs1 << BIT_RS1) |
+                (i->immediate << BIT_RS2) | 
+                (0x0 << BIT_FUNCT7);
+            } else if (strncmp(i->instr, "srai", 4) == 0) {
+                i->input = i->opcode | (i->rd << BIT_RD) |
+                (i->funct3 << BIT_FUNCT3) |
+                (i->rs1 << BIT_RS1) |
+                (i->immediate << BIT_RS2) |
+                (0x20 << BIT_FUNCT7);
+            }
+            break;
+        default:
+            i->input = i->opcode | (i->rd << BIT_RD) |
+            (i->funct3 << BIT_FUNCT3) |
+            (i->rs1 << BIT_RS1) |
+            (i->immediate << BIT_RS2);
+            break;
+        }
+        break;
     case I_TYPE_LOAD:
     case JALR:
     case ENV:
