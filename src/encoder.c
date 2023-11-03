@@ -98,6 +98,11 @@ bool isValidInstruction(const char* str) {
         strncmp(s, "xori",4) == 0 ||
         strncmp(s, "ori", 3) == 0 ||
         strncmp(s, "andi",4) == 0 ||
+        strncmp(s, "lbu", 3) == 0 ||
+        strncmp(s, "lhu", 3) == 0 ||
+        strncmp(s, "lw",  2) == 0 ||
+        strncmp(s, "lh",  2) == 0 ||
+        strncmp(s, "lb",  2) == 0 ||
         strncmp(s, "ld",  2) == 0 || 
         strncmp(s, "sd",  2) == 0 ||
         strncmp(s, "beq", 3) == 0 ||
@@ -241,6 +246,26 @@ void obtainOpcode(instruction* i, const char* str) {
     } else if (strncmp(s, "jal", 3) == 0) {
         strcpy(i->instr, "jal");
         i->opcode = J_TYPE;
+        return;
+    } else if (strncmp(s, "lhu", 3) == 0) {
+        strcpy(i->instr, "lhu");
+        i->opcode = I_TYPE_LOAD;
+        return;
+    } else if (strncmp(s, "lbu", 3) == 0) {
+        strcpy(i->instr, "lbu");
+        i->opcode = I_TYPE_LOAD;
+        return;
+    } else if (strncmp(s, "lb", 2) == 0) {
+        strcpy(i->instr, "lb");
+        i->opcode = I_TYPE_LOAD;
+        return;
+    } else if (strncmp(s, "lh", 2) == 0) {
+        strcpy(i->instr, "lh");
+        i->opcode = I_TYPE_LOAD;
+        return;
+    } else if (strncmp(s, "lw", 2) == 0) {
+        strcpy(i->instr, "lw");
+        i->opcode = I_TYPE_LOAD;
         return;
     } else if (strncmp(s, "ld",  2) == 0) {
         strcpy(i->instr, "ld");
@@ -544,6 +569,7 @@ void obtainFunct3(instruction* i) {
         (strncmp(i->instr, "addi",4) == 0) ||
         (strncmp(i->instr, "beq", 3) == 0) ||
         (strncmp(i->instr, "jalr",4) == 0) ||
+        (strcmp(i->instr, "lb") == 0) ||
         (strncmp(i->instr, "ecall", 5) == 0) ||
         (strncmp(i->instr, "ebreak", 6) == 0)) {
         i->funct3 = 0x0;
@@ -556,6 +582,7 @@ void obtainFunct3(instruction* i) {
         i->funct3 = 0x6;
     } else if (strncmp(i->instr, "xor", 3) == 0 ||
               (strncmp(i->instr, "xori", 4)== 0)||
+              (strncmp(i->instr, "lbu", 3) == 0)||
               (strncmp(i->instr, "blt", 3) == 0)) {
         i->funct3 = 0x4;
     } else if (strncmp(i->instr, "and", 3) == 0 || 
@@ -563,6 +590,7 @@ void obtainFunct3(instruction* i) {
               (strncmp(i->instr, "bgeu", 4)== 0)) {
         i->funct3 = 0x7;
     } else if (strncmp(i->instr, "slli",4) == 0 ||
+               strcmp(i->instr, "lh")      == 0 ||
                strncmp(i->instr, "sll", 3) == 0 ||
                strncmp(i->instr, "bne", 3) == 0) {
         i->funct3 = 0x1;
@@ -570,12 +598,14 @@ void obtainFunct3(instruction* i) {
                strncmp(i->instr, "srai",4) == 0 ||
                strncmp(i->instr, "srl", 3) == 0 ||
                strncmp(i->instr, "sra", 3) == 0 ||
+               strncmp(i->instr, "lhu", 3) == 0 ||
                strncmp(i->instr, "bge", 3) == 0) {
         i->funct3 = 0x5;
     } else if (strncmp(i->instr, "sltu", 4) == 0 ||
                strncmp(i->instr, "sltiu",5) == 0) {
         i->funct3 = 0x3;
     } else if (strncmp(i->instr, "slt", 3) == 0 || 
+               strncmp(i->instr, "lw",  2) == 0 ||
                strncmp(i->instr, "slti",4) == 0) {
         i->funct3 = 0x2;
     } 
@@ -686,12 +716,18 @@ instruction* createEncodedInstruction(const char* s) {
     return i;
 }
 
+void printAllParts(instruction* i) {
+    printf("funct3 = %x, funct7 = %x, rd = %d, rs1 = %d, rs2 = %d, imm = %d\n", 
+            i->funct3, i->funct7, i->rd, i->rs1, i->rs2, i->immediate);
+}
+
 bool encodeInstruction(const char* s) {
     instruction* i = createEncodedInstruction(s);
     if (i == NULL) {
         return false;
     }
     printf("0x%x\n", i->input);
+    printAllParts(i);
     free(i->assemblyStr);
     free(i);
     return true;

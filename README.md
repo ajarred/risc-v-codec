@@ -17,10 +17,14 @@ After compilation, run the program with the following command:
 ./risc
 ```
 ## Current Instruction List
+### RV32I:
 - R-Type: add, sub, xor, and, sll, srl, sra, slt, sltu
-- I-Type: addi, xori, andi, ori, slli, srli, srai, slti, sltiu, ld, jalr, ecall, ebreak
-- S-Type: sd
+- I-Type: addi, xori, andi, ori, slli, srli, srai, slti, sltiu, jalr, ecall, ebreak
+- S-Type: 
 - B-Type: beq, bne, blt, bge, bltu, bgeu
 - J-Type: jal
 - U-Type: lui, auipc
+### RV64I:
+- I-Type: ld
+- S-Type: sd
 

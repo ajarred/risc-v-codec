@@ -456,5 +456,105 @@ void runUnitTest() {
     free(test->assemblyStr);
     free(test);
 
+    test = createDecodedInstruction(0x80008283);
+    assert(strcmp(test->assemblyStr, "lb x5, -2048(x1)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lb x5, -2048(x1)");
+    assert(test->input == 0x80008283);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff08283);
+    assert(strcmp(test->assemblyStr, "lb x5, 2047(x1)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lb x5, 2047(x1)");
+    assert(test->input == 0x7ff08283);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x80009283);
+    assert(strcmp(test->assemblyStr, "lh x5, -2048(x1)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lh x5, -2048(x1)");
+    assert(test->input == 0x80009283);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ff09283);
+    assert(strcmp(test->assemblyStr, "lh x5, 2047(x1)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lh x5, 2047(x1)");
+    assert(test->input == 0x7ff09283);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x800a2903);
+    assert(strcmp(test->assemblyStr, "lw x18, -2048(x20)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lw x18, -2048(x20)");
+    assert(test->input == 0x800a2903);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7ffa2903);
+    assert(strcmp(test->assemblyStr, "lw x18, 2047(x20)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lw x18, 2047(x20)");
+    assert(test->input == 0x7ffa2903);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x800f4e83);
+    assert(strcmp(test->assemblyStr, "lbu x29, -2048(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lbu x29, -2048(x30)");
+    assert(test->input == 0x800f4e83);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7fff4e83);
+    assert(strcmp(test->assemblyStr, "lbu x29, 2047(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lbu x29, 2047(x30)");
+    assert(test->input == 0x7fff4e83);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x800f5e83);
+    assert(strcmp(test->assemblyStr, "lhu x29, -2048(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lhu x29, -2048(x30)");
+    assert(test->input == 0x800f5e83);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createDecodedInstruction(0x7fff5e83);
+    assert(strcmp(test->assemblyStr, "lhu x29, 2047(x30)") == 0);
+    free(test->assemblyStr);
+    free(test);
+
+    test = createEncodedInstruction("lhu x29, 2047(x30)");
+    assert(test->input == 0x7fff5e83);
+    free(test->assemblyStr);
+    free(test);
+
     printf("\nPassed all tests\n");
 }

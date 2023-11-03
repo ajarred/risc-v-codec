@@ -172,8 +172,23 @@ void parseFunct3(instruction* i) {
         break;
     case I_TYPE_LOAD:
         switch(funct3) {
+            case 0x0:
+                strcpy(i->instr, "lb");
+                break;
+            case 0x1:
+                strcpy(i->instr, "lh");
+                break;
+            case 0x2:
+                strcpy(i->instr, "lw");
+                break;
             case 0x3:
                 strcpy(i->instr, "ld");
+                break;
+            case 0x4:
+                strcpy(i->instr, "lbu");
+                break;
+            case 0x5:
+                strcpy(i->instr, "lhu");
                 break;
             default:
                 printDecodeError(i, ERR_FUNCT3);
